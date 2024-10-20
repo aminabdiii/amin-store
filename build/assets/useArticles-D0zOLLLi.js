@@ -1,1 +1,0 @@
-import{u as r}from"./useQuery-cduBLe5R.js";import{b as s}from"./articlesApi-BvuGhY9p.js";function i(){const{data:i,isLoading:a}=r({queryKey:["articles"],queryFn:s});return{articles:i,isLoading:a}}export{i as u};

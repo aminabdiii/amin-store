@@ -1,1 +1,0 @@
-import{u as r}from"./useQuery-cduBLe5R.js";import{s as e}from"./supabase-ClnIyvqL.js";async function t(){let{data:r,error:t}=await e.from("categories").select("*").order("created_at");if(t)throw new Error(t);return r}function a(){const{data:e,isLoading:a}=r({queryKey:["submenu"],queryFn:t});return{categories:e,isLoading:a}}export{a as u};
