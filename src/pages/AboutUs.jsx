@@ -14,13 +14,13 @@ function AboutUs() {
   return (
     <>
       <div
-        className={`${styles["background-image"]} scrollbar flex scroll-m-0 scroll-p-0 flex-col gap-10 px-5 will-change-scroll`}
+        className={`${styles["background-image"]} scrollbar flex scroll-m-0 scroll-p-0 flex-col gap-5 px-5 will-change-scroll`}
       >
         <motion.header
           initial={{ y: -100 }}
           animate={{ y: 0 }}
           transition={{ delay: 1 }}
-          className="sticky top-5 z-50 mx-auto flex w-full max-w-7xl justify-between pb-5"
+          className="z-50 mx-auto flex w-full max-w-7xl justify-between p-5"
         >
           <Logo />
           <button
