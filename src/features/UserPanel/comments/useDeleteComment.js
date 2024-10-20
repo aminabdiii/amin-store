@@ -8,7 +8,7 @@ export function useDeleteComment() {
   const { mutate: deleteComment } = useMutation({
     mutationFn: deleteCommentApi,
 
-    onSuccess(data) {
+    onSuccess() {
       toast.success("deleted Comment has been successfully");
       queryClient.invalidateQueries();
     },

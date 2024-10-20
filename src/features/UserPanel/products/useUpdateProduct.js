@@ -8,7 +8,7 @@ export function useUpdateProduct() {
   const { mutate: updateProduct } = useMutation({
     mutationFn: updateProductApi,
 
-    onSuccess(data) {
+    onSuccess() {
       toast.success("update has been successfully");
       queryClient.invalidateQueries();
     },

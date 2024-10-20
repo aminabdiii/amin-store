@@ -1,6 +1,5 @@
 import { Skeleton } from "@mui/material";
 import { useCategories } from "../hooks/useCategories";
-import Loader from "./Loader";
 import SubMenuItem from "./SubMenuItem";
 
 function SubMenuContainer() {

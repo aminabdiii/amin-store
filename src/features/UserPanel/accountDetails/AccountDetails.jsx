@@ -1,6 +1,5 @@
 import { HiOutlineShoppingBag } from "react-icons/hi";
 import { HiCalendarDays } from "react-icons/hi2";
-import { IoReceiptOutline } from "react-icons/io5";
 import { supabaseUrl } from "../../../../supabase";
 import { useEffect } from "react";
 import { useUploadAvatar } from "./useUploadAvatar";

@@ -6,7 +6,7 @@ function UserBox({ user }) {
   const { deleteUser } = useDeleteUser();
   const { created_at } = user;
 
-  const { id, avatar, fullName, userName } = user.user_metadata;
+  const { avatar, fullName, userName } = user.user_metadata;
   function handleDeleteUser() {
     Swal.fire({
       icon: "warning",

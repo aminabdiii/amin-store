@@ -1,4 +1,4 @@
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { getAllPurchases } from "../../../services/purchasesApi";
 
 const numPurchasePerPage = 4;

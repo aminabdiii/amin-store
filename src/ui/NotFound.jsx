@@ -1,7 +1,6 @@
-import { HiArrowLeft } from "react-icons/hi2";
 import { Link } from "react-router-dom";
 
-function NotFound() {
+function NotFound({ resetErrorBoundry = () => {} }) {
   return (
     <div className="base-gradient absolute inset-0 flex h-dvh flex-col items-center justify-center gap-6 bg-gradient-to-br px-5 uppercase">
       <img src="/404.webp" alt="404" className="w-[576px]" />
@@ -10,12 +9,10 @@ function NotFound() {
       </h1>
       <Link
         to="/"
+        onClick={resetErrorBoundry}
         className="flex items-center gap-2 rounded-xl border-2 bg-white/50 px-4 py-2 text-lg font-semibold uppercase text-black vxs:text-2xl"
       >
-        <span>
-          <HiArrowLeft />
-        </span>
-        <span>back to Home</span>
+        <span>Try Again</span>
       </Link>
     </div>
   );

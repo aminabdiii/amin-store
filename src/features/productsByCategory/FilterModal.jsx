@@ -1,4 +1,3 @@
-import { HiOutlineXCircle } from "react-icons/hi2";
 import CheckBoxFilter from "./CheckBoxFilter";
 import { HiX } from "react-icons/hi";
 
