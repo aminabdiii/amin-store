@@ -1,4 +1,4 @@
-import UnderConstruction from "../../../ui/underConstruction";
+import UnderConstruction from "../../../ui/UnderConstruction";
 import UserPanelContainer from "../UserPanelContainer";
 
 function FavoriteList() {
