@@ -1,0 +1,12 @@
+.hero-section {
+  background: url("/public/hero.webp") no-repeat center;
+  background-attachment: scroll;
+
+  background-size: cover;
+}
+
+@media not all and (min-width: 768px) {
+  .hero-section {
+    background-image: none;
+  }
+}

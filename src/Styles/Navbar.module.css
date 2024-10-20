@@ -1,0 +1,20 @@
+.animate-border {
+  position: relative;
+}
+.animate-border::after {
+  position: absolute;
+  content: "";
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(to bottom right, #663dff, #aa00ff, #cc4499);
+  width: 100%;
+  height: 4px;
+  border-radius: 20px;
+  transition: ease-out 0.2s;
+  transform-origin: right;
+  transform: scale(0, 1);
+}
+
+.animate-border:hover::after {
+  transform: scale(1, 1);
+}

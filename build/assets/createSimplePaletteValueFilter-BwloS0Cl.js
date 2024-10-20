@@ -1,0 +1,1 @@
+function n(n=[]){return([,r])=>r&&function(n,r=[]){if(!function(n){return"string"==typeof n.main}(n))return!1;for(const t of r)if(!n.hasOwnProperty(t)||"string"!=typeof n[t])return!1;return!0}(r,n)}export{n as c};
