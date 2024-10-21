@@ -72,7 +72,7 @@ export async function getAllUsers() {
 
 export async function deleteUserApi({ userId }) {
   const { data, error } = await adminAuthClient.deleteUser(userId);
-  console.log(userId);
+
   if (error) throw new Error(error);
 
   return data;

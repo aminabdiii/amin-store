@@ -122,7 +122,7 @@ function InformationSection({ product, userId }) {
                         id="demo-select-small"
                         label={field.title}
                         disabled={!isAvailable}
-                        className={`!font-montserrat ${!isAvailable && "bg-gray-100"} ${errors[field.title] && "!ring-2 !ring-red-400"}`}
+                        className={`!font-montserrat ${!isAvailable && "bg-gray-100"}`}
                       >
                         {field[field.title].map((item) => (
                           <MenuItem

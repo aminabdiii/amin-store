@@ -73,7 +73,6 @@ function CreateProductForm({ categories }) {
     });
 
     for (let key in optionalValues) {
-      console.log(optionalValues);
       chooseFields.push({
         title: key,
         [key]: optionalValues[key],

@@ -5,7 +5,7 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   plugins: [react()],
   build: {
-    outDir: "build", // تنظیم پوشه خروجی به dist
+    outDir: "build",
     minify: "terser",
     terserOptions: {
       compress: {
@@ -13,11 +13,7 @@ export default defineConfig({
         drop_debugger: true,
         passes: 2,
       },
-      mangle: {
-        properties: {
-          regex: /^_/,
-        },
-      },
+
       output: {
         comments: false,
       },
