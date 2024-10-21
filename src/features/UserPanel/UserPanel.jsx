@@ -19,17 +19,22 @@ import { useGetUserRole } from "../../hooks/useGetUserRole";
 
 import Logo from "../../ui/Logo";
 import UserPanelVerticalNav from "./UserPanelVerticalNav";
-import AccountDetails from "./accountDetails/AccountDetails";
 import Swal from "sweetalert2";
-import FavoriteList from "./favoriteList/FavoriteList";
-import Purchases from "./purchases/Purchases";
-import Users from "./users/Users";
-import AdminPanelSecurity from "../../ui/AdminPanelSecurity";
-import AdminPanelProducts from "./products/AdminPanelProducts";
-import AdminArticlesPage from "./Articles/AdminArticlesPage";
-import UserPanelAsideItem from "../../ui/UserPanelAsideItem";
-import AdminPanelAllPurchases from "./allPurchases/AdminPanelAllPurchases";
-import AdminPanelComments from "./comments/AdminPanelComments";
+
+import { lazy } from "react";
+
+const AccountDetails = lazy(() => import("./accountDetails/AccountDetails"));
+const FavoriteList = lazy(() => import("./favoriteList/FavoriteList"));
+const Purchases = lazy(() => import("./purchases/Purchases"));
+const Users = lazy(() => import("./users/Users"));
+const AdminPanelSecurity = lazy(() => import("../../ui/AdminPanelSecurity"));
+const AdminPanelProducts = lazy(() => import("./products/AdminPanelProducts"));
+const AdminArticlesPage = lazy(() => import("./Articles/AdminArticlesPage"));
+const AdminPanelAllPurchases = lazy(
+  () => import("./allPurchases/AdminPanelAllPurchases"),
+);
+const UserPanelAsideItem = lazy(() => import("../../ui/UserPanelAsideItem"));
+const AdminPanelComments = lazy(() => import("./comments/AdminPanelComments"));
 
 function UserPanel() {
   const { user, isLoading: isLoadingUser } = useGetUser();

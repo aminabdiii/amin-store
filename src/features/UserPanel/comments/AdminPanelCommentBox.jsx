@@ -45,8 +45,12 @@ function AdminPanelCommentBox({
 
   return (
     <div className="relative flex flex-col items-center gap-3 rounded-xl bg-white p-3">
-      <div className="w-40 border-b pb-3">
-        <img className="w-full rounded-xl" src={useravatar} alt={userName} />
+      <div className="relative h-40 w-40 overflow-hidden rounded-full border-b pb-3">
+        <img
+          className="absolute left-1/2 top-1/2 w-full -translate-x-1/2 -translate-y-1/2 rounded-xl"
+          src={useravatar || "/user.jpeg"}
+          alt={userName}
+        />
       </div>
       <div>
         <h4 className="text-xl font-semibold">{userName}</h4>
