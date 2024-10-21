@@ -16,7 +16,7 @@ function Comments({ comments }) {
               <div className="flex items-center gap-3.5">
                 <div className="h-16 w-16 overflow-hidden rounded-full">
                   <img
-                    src={comment.useravatar}
+                    src={comment.useravatar || "user.jpeg"}
                     className="h-full w-full"
                     alt={comment.userName}
                   />
