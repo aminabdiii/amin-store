@@ -6,7 +6,7 @@ import {
 import { toast } from "react-toastify";
 import { useGetUserCartItems } from "./useGetUserCartItems";
 import { FaDollarSign } from "react-icons/fa6";
-import { Button } from "@mui/material";
+import { Button, Skeleton } from "@mui/material";
 import { useGetUser } from "../../hooks/useGetUser";
 import { useDeleteFromCart } from "./useDeleteFromCart";
 import { Navigate } from "react-router-dom";
@@ -14,8 +14,6 @@ import { useInsertUserPurchases } from "./useInsertUserPurchases";
 import { useClearUserCart } from "./useClearUserCart";
 import { useQueryClient } from "@tanstack/react-query";
 
-import Container from "../../ui/Container";
-import Loader from "../../ui/Loader";
 import TopBarTitle from "./TopBarTitle";
 import CounterSection from "../detailsProduct/CounterSection";
 import Image from "./Image";
@@ -38,12 +36,23 @@ function Cart() {
   const { insertPurchases } = useInsertUserPurchases();
   const { clearCart } = useClearUserCart();
 
-  if (isLoading || isGettingUser)
+  if (isLoading || isGettingUser) {
     return (
-      <Container>
-        <Loader />
-      </Container>
+      <section className="mx-auto my-5 flex max-w-7xl flex-col gap-5 px-3 md:flex-row md:justify-between">
+        <div className="h-auto basis-full md:min-h-[80dvh] md:basis-2/3">
+          <Skeleton
+            variant="rounded"
+            height="100%"
+            width="100%"
+            className="!h-dvh !rounded-t-3xl md:h-auto"
+          />
+        </div>
+        <div className="sticky top-[100px] h-full basis-full md:basis-1/3 md:self-start">
+          <Skeleton variant="rounded" height={300} className="!rounded-t-3xl" />
+        </div>
+      </section>
     );
+  }
 
   if (!cartProducts && !isLoading && !isGettingUser) {
     Swal.fire({
@@ -242,9 +251,9 @@ function Cart() {
               <div>
                 <Button
                   onClick={completePurchasesHandler}
-                  size="large"
+                  size="small"
                   variant="contained"
-                  className="!mt-5 w-full !rounded-full !bg-green-400 !font-montserrat !text-[10px] 450:!text-base"
+                  className="!mt-5 w-full !rounded-full !bg-green-400 !font-montserrat 450:!text-base"
                 >
                   Complete Purchase
                 </Button>

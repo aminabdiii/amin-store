@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import Logo from "./Logo";
-import { BsDiscord, BsGithub, BsTwitterX } from "react-icons/bs";
+import { Email, GitHub, Telegram } from "@mui/icons-material";
 
 function Footer() {
   return (
@@ -9,14 +9,27 @@ function Footer() {
         <div className="flex flex-wrap items-center justify-between max-xxs:justify-center">
           <Logo />
           <div className="flex flex-wrap justify-between gap-2 text-2xl">
-            <Link className="p-2" title="Github">
-              <BsGithub />
+            <Link
+              className="p-2 text-3xl"
+              title="Github"
+              to="https://github.com/aminabdiii"
+              target="_blank"
+            >
+              <GitHub fontSize="inherit" />
             </Link>
-            <Link className="p-2" title="TwitterX">
-              <BsTwitterX />
+            <Link
+              className="p-2 text-3xl"
+              to="https://t.me/AminAP9"
+              target="_blank"
+            >
+              <Telegram fontSize="inherit" />
             </Link>
-            <Link className="p-2" title="Discord">
-              <BsDiscord />
+            <Link
+              className="p-2 text-3xl"
+              to="https://mail.google.com/mail/u/0/#sent?compose=CllgCJfrKxdwsJJSxvSTVhccwNTHvZGzvHgttpMZncjhTkTnKKnDnqVTxTkBPFQxlFmppDcSRxq"
+              target="_blank"
+            >
+              <Email fontSize="inherit" />
             </Link>
           </div>
         </div>
