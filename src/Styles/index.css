@@ -255,9 +255,7 @@ body {
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden !important;
 }
-.swal2-shown {
-  padding-right: 4px !important;
-}
+
 .swiper-pagination {
   position: absolute;
   bottom: 0px !important;

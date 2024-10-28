@@ -99,7 +99,8 @@ function SignIn() {
                   required: "email field is required",
                   pattern: {
                     value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                    message: "Please enter a valid email address!",
+                    message:
+                      "Email must include letters, numbers, and @, with at least 8 characters",
                   },
                 })}
               />
@@ -118,7 +119,8 @@ function SignIn() {
                   required: "password field is required",
                   pattern: {
                     value: /^[A-Za-z0-9@]{8,}$$/,
-                    message: "please enter a valid password!",
+                    message:
+                      "Minimum 8 characters, only English letters, numbers, and @ allowed",
                   },
                 })}
               />

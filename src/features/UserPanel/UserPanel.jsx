@@ -21,7 +21,8 @@ import Logo from "../../ui/Logo";
 import UserPanelVerticalNav from "./UserPanelVerticalNav";
 import Swal from "sweetalert2";
 
-import { lazy } from "react";
+import { lazy, Suspense } from "react";
+import PageLoader from "../../ui/PageLoader";
 
 const AccountDetails = lazy(() => import("./accountDetails/AccountDetails"));
 const FavoriteList = lazy(() => import("./favoriteList/FavoriteList"));
@@ -104,129 +105,131 @@ function UserPanel() {
   }
 
   return (
-    <div className="relative">
-      <div className="p-3 shadow md:hidden">
-        <div className="mx-auto flex max-w-7xl items-center justify-between">
-          <Logo />
-          <UserPanelVerticalNav>
-            <UserPanelVerticalNav.Toggle />
-            <UserPanelVerticalNav.Window isAdmin={isAdmin} />
-            <UserPanelVerticalNav.OverLay />
-          </UserPanelVerticalNav>
+    <Suspense Suspense fallback={<PageLoader />}>
+      <div className="relative">
+        <div className="p-3 shadow md:hidden">
+          <div className="mx-auto flex max-w-7xl items-center justify-between">
+            <Logo />
+            <UserPanelVerticalNav>
+              <UserPanelVerticalNav.Toggle />
+              <UserPanelVerticalNav.Window isAdmin={isAdmin} />
+              <UserPanelVerticalNav.OverLay />
+            </UserPanelVerticalNav>
+          </div>
+        </div>
+
+        <div className="mx-auto flex max-w-7xl flex-col md:flex-row md:justify-between md:gap-6 md:px-8 md:py-7">
+          <section className="sticky top-7 hidden h-full basis-1/4 md:flex md:flex-col md:gap-5">
+            <div>
+              <Link
+                to={"/home"}
+                className="base-gradient block bg-gradient-to-r from-40% bg-clip-text py-5 text-center text-2xl font-bold text-transparent 850:text-[28px] lg:text-4xl"
+              >
+                AMiN STORE
+              </Link>
+            </div>
+            <ul className="flex flex-col gap-4 text-sm font-medium capitalize">
+              <UserPanelAsideItem path={"accountDetails"} pageAddress={page}>
+                <HiOutlineUser size={21} />
+                account details
+              </UserPanelAsideItem>
+              <UserPanelAsideItem path={"purchases"} pageAddress={page}>
+                <HiOutlineShoppingBag size={21} />
+                Purchases
+              </UserPanelAsideItem>
+              <UserPanelAsideItem path={"favoriteList"} pageAddress={page}>
+                <HiOutlineHeart size={21} />
+                Favorite List
+              </UserPanelAsideItem>
+
+              {isAdmin && (
+                <>
+                  <UserPanelAsideItem
+                    path={"users"}
+                    pageAddress={page}
+                    type="admin"
+                  >
+                    <HiOutlineUsers size={21} />
+                    users
+                  </UserPanelAsideItem>
+                  <UserPanelAsideItem
+                    path={"products"}
+                    pageAddress={page}
+                    type="admin"
+                  >
+                    <HiOutlineSquares2X2 size={21} />
+                    products
+                  </UserPanelAsideItem>
+                  <UserPanelAsideItem
+                    path={"articles"}
+                    pageAddress={page}
+                    type="admin"
+                  >
+                    <HiOutlineBookOpen size={21} />
+                    articles
+                  </UserPanelAsideItem>
+                  <UserPanelAsideItem
+                    path={"allPurchases"}
+                    pageAddress={page}
+                    type="admin"
+                  >
+                    <HiOutlineShoppingCart size={21} />
+                    allPurchases
+                  </UserPanelAsideItem>
+                  <UserPanelAsideItem
+                    path={"comments"}
+                    pageAddress={page}
+                    type="admin"
+                  >
+                    <FaRegComments size={21} />
+                    Comments
+                  </UserPanelAsideItem>
+                </>
+              )}
+              <li>
+                <button
+                  onClick={logoutHandler}
+                  className="flex w-full flex-wrap items-center gap-3 rounded-xl p-2 xs:p-3 850:text-base"
+                >
+                  <Logout size={21} />
+                  <span>Logout</span>
+                </button>
+              </li>
+            </ul>
+          </section>
+          {page === "accountDetails" && (
+            <AccountDetails user={user} cartItemsLength={cartItemsLength} />
+          )}
+          {page === "purchases" && <Purchases />}
+          {page === "favoriteList" && <FavoriteList />}
+          {page === "users" && (
+            <AdminPanelSecurity>
+              <Users />
+            </AdminPanelSecurity>
+          )}
+          {page === "products" && (
+            <AdminPanelSecurity>
+              <AdminPanelProducts />
+            </AdminPanelSecurity>
+          )}
+          {page === "articles" && (
+            <AdminPanelSecurity>
+              <AdminArticlesPage />
+            </AdminPanelSecurity>
+          )}
+          {page === "allPurchases" && (
+            <AdminPanelSecurity>
+              <AdminPanelAllPurchases />
+            </AdminPanelSecurity>
+          )}
+          {page === "comments" && (
+            <AdminPanelSecurity>
+              <AdminPanelComments />
+            </AdminPanelSecurity>
+          )}
         </div>
       </div>
-
-      <div className="mx-auto flex max-w-7xl flex-col md:flex-row md:justify-between md:gap-6 md:px-8 md:py-7">
-        <section className="sticky top-7 hidden h-full basis-1/4 md:flex md:flex-col md:gap-5">
-          <div>
-            <Link
-              to={"/home"}
-              className="base-gradient block bg-gradient-to-r from-40% bg-clip-text py-5 text-center text-2xl font-bold text-transparent 850:text-[28px] lg:text-4xl"
-            >
-              AMiN STORE
-            </Link>
-          </div>
-          <ul className="flex flex-col gap-4 text-sm font-medium capitalize">
-            <UserPanelAsideItem path={"accountDetails"} pageAddress={page}>
-              <HiOutlineUser size={21} />
-              account details
-            </UserPanelAsideItem>
-            <UserPanelAsideItem path={"purchases"} pageAddress={page}>
-              <HiOutlineShoppingBag size={21} />
-              Purchases
-            </UserPanelAsideItem>
-            <UserPanelAsideItem path={"favoriteList"} pageAddress={page}>
-              <HiOutlineHeart size={21} />
-              Favorite List
-            </UserPanelAsideItem>
-
-            {isAdmin && (
-              <>
-                <UserPanelAsideItem
-                  path={"users"}
-                  pageAddress={page}
-                  type="admin"
-                >
-                  <HiOutlineUsers size={21} />
-                  users
-                </UserPanelAsideItem>
-                <UserPanelAsideItem
-                  path={"products"}
-                  pageAddress={page}
-                  type="admin"
-                >
-                  <HiOutlineSquares2X2 size={21} />
-                  products
-                </UserPanelAsideItem>
-                <UserPanelAsideItem
-                  path={"articles"}
-                  pageAddress={page}
-                  type="admin"
-                >
-                  <HiOutlineBookOpen size={21} />
-                  articles
-                </UserPanelAsideItem>
-                <UserPanelAsideItem
-                  path={"allPurchases"}
-                  pageAddress={page}
-                  type="admin"
-                >
-                  <HiOutlineShoppingCart size={21} />
-                  allPurchases
-                </UserPanelAsideItem>
-                <UserPanelAsideItem
-                  path={"comments"}
-                  pageAddress={page}
-                  type="admin"
-                >
-                  <FaRegComments size={21} />
-                  Comments
-                </UserPanelAsideItem>
-              </>
-            )}
-            <li>
-              <button
-                onClick={logoutHandler}
-                className="flex w-full flex-wrap items-center gap-3 rounded-xl p-2 xs:p-3 850:text-base"
-              >
-                <Logout size={21} />
-                <span>Logout</span>
-              </button>
-            </li>
-          </ul>
-        </section>
-        {page === "accountDetails" && (
-          <AccountDetails user={user} cartItemsLength={cartItemsLength} />
-        )}
-        {page === "purchases" && <Purchases />}
-        {page === "favoriteList" && <FavoriteList />}
-        {page === "users" && (
-          <AdminPanelSecurity>
-            <Users />
-          </AdminPanelSecurity>
-        )}
-        {page === "products" && (
-          <AdminPanelSecurity>
-            <AdminPanelProducts />
-          </AdminPanelSecurity>
-        )}
-        {page === "articles" && (
-          <AdminPanelSecurity>
-            <AdminArticlesPage />
-          </AdminPanelSecurity>
-        )}
-        {page === "allPurchases" && (
-          <AdminPanelSecurity>
-            <AdminPanelAllPurchases />
-          </AdminPanelSecurity>
-        )}
-        {page === "comments" && (
-          <AdminPanelSecurity>
-            <AdminPanelComments />
-          </AdminPanelSecurity>
-        )}
-      </div>
-    </div>
+    </Suspense>
   );
 }
 

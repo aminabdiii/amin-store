@@ -9,7 +9,7 @@ function FeatureItem({ feature }) {
       }}
     >
       <div className="w-[70px] sm:w-[118px]">
-        <img src={image} className="w-full" alt="FAST SHIPPING" />
+        <img src={image} className="w-full" alt={title} />
       </div>
       <div className="flex w-3/4 flex-col gap-4 sm:w-full">
         <h3 className="text-start text-sm font-bold sm:text-center sm:text-lg md:text-xl">

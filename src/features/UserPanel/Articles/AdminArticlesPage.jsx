@@ -23,27 +23,30 @@ import "/src/Styles/ckEditor.css";
 import "ckeditor5/ckeditor5.css";
 import "ckeditor5-premium-features/ckeditor5-premium-features.css";
 
-import UserPanelContainer from "../UserPanelContainer";
 import { HiUpload } from "react-icons/hi";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import ProductsInputBox from "../products/ProductsInputBox";
 import { useUploadProductImages } from "../products/useUploadProductImages";
 import { useInsertNewArticle } from "./useInsertNewArticle";
 import { useArticles } from "../../Articles/useArticles";
 import { Skeleton } from "@mui/material";
 
+import UserPanelContainer from "../UserPanelContainer";
 import ArticleItemAdminPanel from "./ArticleItemAdminPanel";
+import ProductsInputBox from "../products/ProductsInputBox";
 import EditArticleModal from "./EditArticleModal";
 
 function AdminArticlesPage() {
   const { register, handleSubmit, reset, watch } = useForm();
+
   const [content, setContent] = useState("");
+  const [editArticleId, setEditArticleId] = useState("");
+
   const { uploadProductImage } = useUploadProductImages();
   const { insertNewArticle } = useInsertNewArticle();
+
   const { articles, isLoading } = useArticles();
-  const [editArticleId, setEditArticleId] = useState("");
 
   const title = watch("title");
   const newArticleImageUrl = `https://ddjggonagtvxnthvjxtr.supabase.co/storage/v1/object/public/articles/${title}`;

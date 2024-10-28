@@ -6,17 +6,5 @@ export default defineConfig({
   plugins: [react()],
   build: {
     outDir: "build",
-    minify: "terser",
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true,
-        passes: 2,
-      },
-
-      output: {
-        comments: false,
-      },
-    },
   },
 });

@@ -28,7 +28,7 @@ function Product({ product }) {
         <img
           className="!w-[400px]"
           src={image || "no-image.webp"}
-          alt="headphone"
+          alt={title}
         />
       </div>
       <div className="flex !min-h-40 flex-col justify-between gap-1 px-2 sm:mx-auto sm:h-full sm:w-11/12 sm:gap-6 sm:px-0">

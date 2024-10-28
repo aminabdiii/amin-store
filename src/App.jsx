@@ -5,6 +5,7 @@ import { lazy, Suspense } from "react";
 import { ToastContainer } from "react-toastify";
 
 import ScrollTop from "./ui/ScrollTop";
+import NotFound from "./ui/NotFound";
 
 import "react-toastify/dist/ReactToastify.css";
 
@@ -15,7 +16,6 @@ const CartPage = lazy(() => import("./pages/CartPage"));
 const ProductsByCategoryPage = lazy(
   () => import("./pages/ProductsByCategoryPage"),
 );
-const NotFound = lazy(() => import("./ui/NotFound"));
 const SignInPage = lazy(() => import("./pages/SignInPage"));
 
 const Articles = lazy(() => import("./pages/Articles"));

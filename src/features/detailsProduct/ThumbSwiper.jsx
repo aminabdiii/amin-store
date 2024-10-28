@@ -28,15 +28,18 @@ function ThumbSwiper({ product }) {
         className="mySwiper2 w-full cursor-grab active:cursor-grabbing"
       >
         <SwiperSlide className="main-swiper !flex !justify-center">
-          <img src={image} alt={`${title}-1`} />
+          <img src={image} alt={`${title}-general`} />
         </SwiperSlide>
         {otherImages?.length > 0 &&
-          otherImages?.map((image) => (
+          otherImages?.map((image, index) => (
             <SwiperSlide
               key={image}
               className="main-swiper !flex !justify-center"
             >
-              <img src={image} />
+              <img
+                src={image}
+                alt={`${title.split(" ").join("")}-${index + 1}`}
+              />
             </SwiperSlide>
           ))}
       </Swiper>
@@ -52,15 +55,18 @@ function ThumbSwiper({ product }) {
           className="mySwiper w-full"
         >
           <SwiperSlide className="!flex cursor-pointer !justify-center">
-            <img src={image} alt={`${title}-1`} />
+            <img src={image} alt={`${title}-thumbnail`} />
           </SwiperSlide>
 
-          {otherImages?.map((image) => (
+          {otherImages?.map((image, index) => (
             <SwiperSlide
               className="!flex cursor-pointer !justify-center"
               key={image}
             >
-              <img src={image} alt={image} />
+              <img
+                src={image}
+                alt={`${title.split(" ").join("")}-${index + 1}`}
+              />
             </SwiperSlide>
           ))}
         </Swiper>
