@@ -83,23 +83,27 @@ function Cart() {
   }
   const totalPrice = _.reduce(
     cartProducts.cart_items,
-    (acc, item) => (acc + item.price) * item.count,
+    (acc, item) => acc + item.price * item.count,
     0,
   );
-  const discountPrice = _.reduce(
-    cartProducts.cart_items,
-    (acc, item) =>
-      (item.price - (item.price * item.discount) / 100) * item.count + acc,
-    0,
-  );
+
   const isHaveDiscount = _.some(
     cartProducts.cart_items,
     (item) => item.discount,
   );
 
-  const calcDiscount = Math.floor(
-    ((totalPrice - discountPrice) / totalPrice) * 100,
+  const discountPrice = _.reduce(
+    cartProducts.cart_items,
+    (acc, item) =>
+      isHaveDiscount
+        ? acc + (item.price - (item.price * item.discount) / 100) * item.count
+        : totalPrice,
+    0,
   );
+
+  const calcDiscountPercentage = isHaveDiscount
+    ? Math.floor(((totalPrice - discountPrice) / totalPrice) * 100)
+    : 0;
 
   const cartItems = cartProducts.cart_items.sort((a, b) => b.price - a.price);
 
@@ -227,7 +231,7 @@ function Cart() {
                 </div>
                 <div className="flex items-center justify-between gap-2 text-red-500">
                   <h4 className="text-sm font-semibold capitalize">
-                    discounted price ({calcDiscount}%)
+                    discounted price ({calcDiscountPercentage}%)
                   </h4>
                   <span className="flex items-center gap-1 text-base font-semibold">
                     {discountPrice.toFixed(2)}
