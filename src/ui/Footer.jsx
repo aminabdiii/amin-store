@@ -26,7 +26,7 @@ function Footer() {
             </Link>
             <Link
               className="p-2 text-3xl"
-              to="https://mail.google.com/mail/u/0/#sent?compose=CllgCJfrKxdwsJJSxvSTVhccwNTHvZGzvHgttpMZncjhTkTnKKnDnqVTxTkBPFQxlFmppDcSRxq"
+              to="mailto:aminabdiii2006@gmail.com"
               target="_blank"
             >
               <Email fontSize="inherit" />

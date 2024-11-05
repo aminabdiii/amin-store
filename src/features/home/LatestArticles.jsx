@@ -16,7 +16,7 @@ function LatestArticles() {
         path="/articles"
       />
       {isLoading && (
-        <div className="my-5 grid grid-cols-1 gap-6 xs:grid-cols-2 850:grid-cols-3">
+        <div className="my-5 grid grid-cols-1 gap-5 vxs:grid-cols-2 xs:grid-cols-2 850:grid-cols-3">
           {Array(SKELETON_COUNT)
             .fill(0)
             .map((_, index) => {
@@ -32,7 +32,7 @@ function LatestArticles() {
         </div>
       )}
       {!isLoading && (
-        <div className="my-5 grid grid-cols-1 gap-6 xs:grid-cols-2 850:grid-cols-3">
+        <div className="my-5 grid grid-cols-1 gap-5 vxs:grid-cols-2 md:grid-cols-3 850:grid-cols-3">
           {latestArticles.length &&
             latestArticles.map((article) => {
               return <ArticleItem key={article.id} article={article} />;

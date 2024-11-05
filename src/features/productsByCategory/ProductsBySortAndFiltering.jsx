@@ -93,7 +93,7 @@ function ProductsBySortAndFiltering({
               height={64}
             />
           </div>
-          <div className="grid w-full grid-cols-1 gap-5 450:grid-cols-2 md:flex-grow md:basis-3/4 md:grid-cols-3">
+          <div className="grid w-full grid-cols-1 gap-5 vxs:grid-cols-2 md:flex-grow md:basis-3/4 md:grid-cols-3">
             <div className="!col-span-3 hidden lg:block">
               <Skeleton animation="wave" variant="rounded" height={64} />
             </div>
@@ -108,6 +108,7 @@ function ProductsBySortAndFiltering({
       </Container>
     );
   }
+
   const calculateProducts = _.reduce(
     pages,
     (acc, page) => acc + page.length,
@@ -162,7 +163,7 @@ function ProductsBySortAndFiltering({
           </>
         </section>
         <>
-          <section className="grid w-full grid-cols-1 gap-5 450:grid-cols-2 md:flex-grow md:basis-3/4 md:grid-cols-3">
+          <section className="grid w-full grid-cols-1 gap-5 vxs:grid-cols-2 md:flex-grow md:basis-3/4 md:grid-cols-3">
             <>
               <SorterForMDSize />
             </>
@@ -203,7 +204,7 @@ function ProductsBySortAndFiltering({
             </>
 
             {!hasNextPage && pages[0].length > 0 && (
-              <p className="col-span-1 flex w-full justify-center font-medium 450:col-span-2 md:col-span-3">
+              <p className="col-span-1 flex w-full justify-center font-medium vxs:col-span-2 md:col-span-3">
                 All products were displayed
               </p>
             )}

@@ -261,10 +261,10 @@ body {
   bottom: 0px !important;
 }
 .swiper-pagination-bullet {
-  background-color: #8a5cf6ad !important;
+  background-color: #673dffb3 !important;
 }
 .swiper-pagination-bullet-active {
-  background-color: #8b5cf6 !important;
+  background-color: #663dff !important;
 }
 
 input {

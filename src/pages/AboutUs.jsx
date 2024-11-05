@@ -1,5 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
-import { EmailOutlined, GitHub, Telegram } from "@mui/icons-material";
+import {
+  ArrowBack,
+  ChevronLeft,
+  EmailOutlined,
+  GitHub,
+  Telegram,
+} from "@mui/icons-material";
 
 import ParticlesComponent from "../ui/ParticlesComponents";
 import styles from "../Styles/AboutUs.module.css";
@@ -14,23 +20,25 @@ function AboutUs() {
   return (
     <>
       <div
-        className={`${styles["background-image"]} scrollbar flex scroll-m-0 scroll-p-0 flex-col gap-5 px-5 will-change-scroll`}
+        className={`${styles["background-image"]} scrollbar flex scroll-m-0 scroll-p-0 flex-col gap-10 px-3 will-change-scroll`}
       >
         <motion.header
-          initial={{ y: -100 }}
-          animate={{ y: 0 }}
-          transition={{ delay: 1 }}
-          className="z-50 mx-auto flex w-full max-w-7xl justify-between p-5"
+          initial={{ y: -100, scale: 0.5 }}
+          animate={{ y: 0, scale: 1 }}
+          transition={{
+            delay: 2.7,
+          }}
+          className="z-50 mx-auto flex w-full max-w-7xl justify-between p-3"
         >
           <Logo />
           <button
-            className="rounded-xl border border-gray-300 px-8 font-bold uppercase text-gray-300 transition-colors hover:bg-gray-300 hover:text-black"
+            className="flex items-center gap-1 rounded-xl border border-gray-300 px-8 font-bold uppercase text-gray-300 transition-colors hover:bg-gray-300 hover:text-black"
             onClick={() => navigate(-1)}
           >
-            back
+            <ArrowBack />
           </button>
         </motion.header>
-        <main className="mx-auto flex h-full max-w-3xl flex-col items-center gap-10">
+        <main className="mx-auto flex h-full max-w-3xl flex-col items-center gap-10 px-3">
           <h1 className="h-fit text-3xl font-extrabold text-gray-100 transition-all duration-300 hover:text-white vxs:text-4xl sm:text-5xl md:text-6xl">
             <TypewriterComponent
               options={{
@@ -44,7 +52,7 @@ function AboutUs() {
             <motion.p
               initial={{ x: "-200%" }}
               animate={{ x: 0 }}
-              transition={{ delay: 3 }}
+              transition={{ delay: 4 }}
               className={`h-fit break-words transition-colors hover:text-white`}
               data-aos="fade-up"
             >
@@ -54,7 +62,7 @@ function AboutUs() {
             <motion.p
               initial={{ x: "200%" }}
               animate={{ x: 0 }}
-              transition={{ delay: 5 }}
+              transition={{ delay: 6 }}
               className="h-fit break-words transition-colors hover:text-white"
             >
               I’d like to give you a brief introduction about myself:
@@ -62,7 +70,7 @@ function AboutUs() {
             <motion.p
               initial={{ x: "-200%" }}
               animate={{ x: 0 }}
-              transition={{ delay: 7 }}
+              transition={{ delay: 8 }}
               className="h-fit break-words py-5 transition-colors hover:text-white"
             >
               My name is Amin, born on January 31, 2006. I’m 18 years old and
@@ -93,7 +101,7 @@ function AboutUs() {
               visibility: "visible",
               opacity: 100,
             }}
-            transition={{ delay: 11, duration: 1 }}
+            transition={{ delay: 12, duration: 1 }}
             className="flex w-full items-center justify-between pb-10 text-lg font-semibold text-gray-300"
           >
             <span>contact me:</span>
@@ -109,10 +117,7 @@ function AboutUs() {
                 </Link>
               </li>
               <li className="hover:text-white">
-                <Link
-                  to="https://mail.google.com/mail/u/0/#sent?compose=CllgCJfrKxdwsJJSxvSTVhccwNTHvZGzvHgttpMZncjhTkTnKKnDnqVTxTkBPFQxlFmppDcSRxq"
-                  target="_blank"
-                >
+                <Link to="mailto:aminabdiii2006@gmail.com">
                   <EmailOutlined fontSize="inherit" />
                 </Link>
               </li>

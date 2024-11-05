@@ -14,8 +14,10 @@ function ArticleItem({ article }) {
             </span>
           </div>
         </div>
-        <div className="line-clamp-3 p-2">
-          <p>{title}</p>
+        <div className="bg-white p-2">
+          <p className="!line-clamp-2 text-xs leading-6 xs:text-sm xs:leading-8">
+            {title}
+          </p>
         </div>
       </Link>
     </div>

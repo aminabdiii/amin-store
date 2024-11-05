@@ -55,10 +55,8 @@ function Window({ user, cartProductLength }) {
 
   return (
     <div
-      className={`fixed left-0 top-0 z-30 w-8/12 rounded-br-2xl bg-white shadow-xl transition-all xs:w-1/2 ${
-        isOpen
-          ? "translate-x-0 translate-y-0"
-          : "-translate-x-full -translate-y-full"
+      className={`fixed left-0 top-0 z-30 w-8/12 rounded-br-2xl bg-white shadow-xl transition-all ease-in xs:w-1/2 ${
+        isOpen ? "translate-x-0" : "-translate-x-full"
       } md:hidden`}
     >
       <h1 className="base-gradient bg-gradient-to-r bg-clip-text py-5 text-center text-2xl font-bold text-transparent">
