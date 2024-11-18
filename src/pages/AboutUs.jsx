@@ -82,7 +82,7 @@ function AboutUs() {
             <motion.p
               initial={{ x: "200%" }}
               animate={{ x: 0 }}
-              transition={{ delay: 9 }}
+              transition={{ delay: 10 }}
               className="h-fit break-words transition-colors hover:text-white"
             >
               I have a perfectionist personality and am particularly meticulous
