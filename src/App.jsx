@@ -1,7 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 
 import ScrollTop from "./ui/ScrollTop";
@@ -39,6 +39,14 @@ function App() {
       },
     },
   });
+
+  useEffect(() => {
+    const isFirefox = navigator.userAgent.toLowerCase().includes("firefox");
+
+    if (isFirefox) {
+      document.documentElement.classList.remove("scroll-smooth");
+    }
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
