@@ -5,8 +5,6 @@ export default {
     extend: {
       fontFamily: {
         montserrat: ["Montserrat"],
-        poppins: ["Poppins"],
-        bebasNeue: ["Bebas Neue"],
       },
       screens: {
         xs: "500px",
