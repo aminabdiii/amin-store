@@ -1,6 +1,6 @@
-<h1 align="center"><a href="https://amin-store-xi.vercel.app">AMiN STORE</a></h1>
+<h1 align="center"><a href="https://amin-store-xi.vercel.app">AMiN STORE 🔗</a></h1>
 
-## Developed with Vite & React
+### Developed with Vite & React. Project overview 👇
 
 <img src="https://raw.githubusercontent.com/aminabdiii/amin-store/refs/heads/master/public/amin-store-performance.png" alt="performance"/>
 
