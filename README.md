@@ -16,3 +16,4 @@ Currently, two official plugins are available:
 <img src="./images/4.png" alt="image 4" />
 <img src="./images/5.png" alt="image 5" />
 <img src="./images/6.png" alt="image 6" />
+<img src="./images/8.png" alt="image 6" />
