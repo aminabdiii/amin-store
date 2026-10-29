@@ -40,7 +40,7 @@ function LatestArticles() {
       )}
       {!isLoading && (
         <div className="my-5 grid grid-cols-1 gap-5 vxs:grid-cols-2 md:grid-cols-3 850:grid-cols-3">
-          {latestArticles.length &&
+          {latestArticles.length > 0 &&
             latestArticles.map((article) => {
               return <ArticleItem key={article.id} article={article} />;
             })}
