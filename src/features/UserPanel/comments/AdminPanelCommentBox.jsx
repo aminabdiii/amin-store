@@ -2,6 +2,7 @@ import { productPath } from "../../../routing/paths";
 import { HiArchiveBox, HiCheckBadge, HiEye, HiTrash } from "react-icons/hi2";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
+import MediaImage from "../../../ui/MediaImage";
 import { useConfirmUserComment } from "./useConfirmUserComment";
 import { useDeleteComment } from "./useDeleteComment";
 
@@ -48,11 +49,12 @@ function AdminPanelCommentBox({
 
   return (
     <div className="relative flex flex-col items-center gap-3 rounded-xl bg-white p-3">
-      <div className="relative h-40 w-40 overflow-hidden rounded-full border-b pb-3">
-        <img
-          className="absolute left-1/2 top-1/2 w-full -translate-x-1/2 -translate-y-1/2 rounded-xl"
-          src={useravatar || "/user.jpeg"}
+      <div className="relative h-40 w-40 overflow-hidden rounded-full">
+        <MediaImage
+          className="h-full w-full"
+          src={useravatar}
           alt={userName}
+          kind="avatar"
         />
       </div>
       <div>

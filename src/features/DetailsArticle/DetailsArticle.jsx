@@ -2,6 +2,8 @@ import NotFound from "../../ui/NotFound";
 import QueryError from "../../ui/QueryError";
 import { Skeleton } from "@mui/material";
 import { useDetailsArticle } from "./useDetailsArticle";
+import MediaImage from "../../ui/MediaImage";
+import ArticleContent from "./ArticleContent";
 
 import "/src/Styles/ckEditor.css";
 import { Share } from "@mui/icons-material";
@@ -46,14 +48,17 @@ function DetailsArticle() {
     >
       {error && <QueryError onRetry={refetch} />}
       <div className="mb-5">
-        <img className="mx-auto rounded-3xl" src={image?.url} alt={title} />
+        <MediaImage
+          className="mx-auto w-full rounded-3xl"
+          src={image?.url}
+          alt={title}
+          kind="article"
+          loading="eager"
+        />
       </div>
       <h1 className="text-3xl font-semibold leading-10 md:text-4xl">{title}</h1>
 
-      <div
-        className="ck-content mx-auto flex max-w-5xl flex-col gap-5 break-words bg-white"
-        dangerouslySetInnerHTML={{ __html: content }}
-      />
+      <ArticleContent content={content} />
 
       <button
         onClick={handleShare}

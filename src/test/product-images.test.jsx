@@ -10,16 +10,22 @@ describe("product image fallback", () => {
   it("shows the original image with its accessible name", () => {
     render(<ProductImage src="/product.webp" alt="Walking shoes" />);
     expect(screen.getByRole("img", { name: "Walking shoes" })).toHaveAttribute(
-      "src",
-      "/product.webp",
+      "aria-label",
+      "Walking shoes",
     );
+    expect(
+      screen.getByRole("img").querySelector('img[src="/product.webp"]'),
+    ).toBeInTheDocument();
   });
 
   it.each([undefined, null, "", "   "])(
     "uses the local fallback for a missing source (%s)",
     (src) => {
       render(<ProductImage src={src} alt="Walking shoes" />);
-      expect(screen.getByRole("img")).toHaveAttribute("src", "/no-image.webp");
+      expect(screen.getByRole("img").querySelector("img")).toHaveAttribute(
+        "src",
+        "/placeholders/product.svg",
+      );
     },
   );
 
@@ -31,11 +37,14 @@ describe("product image fallback", () => {
         className="h-14 w-14"
       />,
     );
-    const image = screen.getByRole("img");
-    const frame = image.parentElement;
+    const frame = screen.getByRole("img");
+    const image = frame.querySelector('img[src="/broken.webp"]');
     fireEvent.error(image);
-    expect(screen.getByRole("img")).toHaveAttribute("src", "/no-image.webp");
-    expect(screen.getByRole("img").parentElement).toBe(frame);
+    expect(frame.querySelector("img")).toHaveAttribute(
+      "src",
+      "/placeholders/product.svg",
+    );
+    expect(screen.getByRole("img")).toBe(frame);
     expect(frame).toHaveClass("h-14", "w-14");
   });
 
@@ -43,13 +52,11 @@ describe("product image fallback", () => {
     const { container } = render(
       <ProductImage src="/broken.webp" alt="Walking shoes" />,
     );
-    const frame = screen.getByRole("img").parentElement;
-    fireEvent.error(screen.getByRole("img"));
-    fireEvent.error(screen.getByRole("img"));
+    const frame = screen.getByRole("img");
+    fireEvent.error(frame.querySelector('img[src="/broken.webp"]'));
+    fireEvent.error(frame.querySelector("img"));
     expect(container.querySelector("img")).toBeNull();
-    expect(
-      screen.getByRole("img", { name: "Walking shoes" }).parentElement,
-    ).toBe(frame);
+    expect(screen.getByRole("img", { name: "Walking shoes" })).toBe(frame);
     expect(frame.querySelector("svg")).toBeInTheDocument();
   });
 
@@ -57,30 +64,34 @@ describe("product image fallback", () => {
     const { rerender } = render(
       <ProductImage src="/broken.webp" alt="Shoes" />,
     );
-    fireEvent.error(screen.getByRole("img"));
-    rerender(<ProductImage src="/broken.webp" alt="Updated shoes" />);
-    expect(screen.getByRole("img", { name: "Updated shoes" })).toHaveAttribute(
-      "src",
-      "/no-image.webp",
+    fireEvent.error(
+      screen.getByRole("img").querySelector('img[src="/broken.webp"]'),
     );
+    rerender(<ProductImage src="/broken.webp" alt="Updated shoes" />);
+    expect(
+      screen.getByRole("img", { name: "Updated shoes" }).querySelector("img"),
+    ).toHaveAttribute("src", "/placeholders/product.svg");
   });
 
   it("retries a new source after both previous requests failed", () => {
     const { rerender } = render(
       <ProductImage src="/broken.webp" alt="Shoes" />,
     );
-    fireEvent.error(screen.getByRole("img"));
-    fireEvent.error(screen.getByRole("img"));
-    rerender(<ProductImage src="/new-product.webp" alt="New shoes" />);
-    expect(screen.getByRole("img", { name: "New shoes" })).toHaveAttribute(
-      "src",
-      "/new-product.webp",
+    fireEvent.error(
+      screen.getByRole("img").querySelector('img[src="/broken.webp"]'),
     );
+    fireEvent.error(screen.getByRole("img").querySelector("img"));
+    rerender(<ProductImage src="/new-product.webp" alt="New shoes" />);
+    expect(
+      screen
+        .getByRole("img", { name: "New shoes" })
+        .querySelector('img[src="/new-product.webp"]'),
+    ).toHaveAttribute("src", "/new-product.webp");
   });
 
   it("stops after a failed fallback when the source is initially absent", () => {
     const { container } = render(<ProductImage alt="Shoes" />);
-    fireEvent.error(screen.getByRole("img"));
+    fireEvent.error(screen.getByRole("img").querySelector("img"));
     expect(container.querySelector("img")).toBeNull();
     expect(screen.getByRole("img", { name: "Shoes" })).toBeInTheDocument();
   });
@@ -115,8 +126,15 @@ describe("product image integration", () => {
         {component}
       </MemoryRouter>,
     );
-    fireEvent.error(screen.getByRole("img", { name: product.title }));
-    expect(screen.getByRole("img")).toHaveAttribute("src", "/no-image.webp");
+    fireEvent.error(
+      screen
+        .getByRole("img", { name: product.title })
+        .querySelector('img[src="/broken.webp"]'),
+    );
+    expect(screen.getByRole("img").querySelector("img")).toHaveAttribute(
+      "src",
+      "/placeholders/product.svg",
+    );
   });
 
   it.each([[], null, undefined])(
@@ -124,8 +142,10 @@ describe("product image integration", () => {
     (images) => {
       render(<ThumbSwiper product={{ ...product, images }} />);
       expect(
-        screen.getByRole("img", { name: "Walking shoes-general" }),
-      ).toHaveAttribute("src", "/no-image.webp");
+        screen
+          .getByRole("img", { name: "Walking shoes-general" })
+          .querySelector("img"),
+      ).toHaveAttribute("src", "/placeholders/product.svg");
     },
   );
 });

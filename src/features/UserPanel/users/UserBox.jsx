@@ -1,6 +1,7 @@
 import { HiOutlineTrash } from "react-icons/hi2";
 import { useDeleteUser } from "./useDeleteUser";
 import Swal from "sweetalert2";
+import MediaImage from "../../../ui/MediaImage";
 
 function UserBox({ user }) {
   const { deleteUser } = useDeleteUser();
@@ -23,10 +24,11 @@ function UserBox({ user }) {
       <>
         <div className="flex items-center justify-center">
           <div className="flex h-44 w-full items-center justify-center border-b">
-            <img
+            <MediaImage
               className="h-28 w-28 rounded-full sm:h-36 sm:w-36"
-              src={avatar?.url || "/user.jpeg"}
+              src={avatar?.url}
               alt={fullName}
+              kind="avatar"
             />
           </div>
         </div>

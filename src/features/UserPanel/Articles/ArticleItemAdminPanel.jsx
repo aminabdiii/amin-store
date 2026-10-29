@@ -1,6 +1,7 @@
 import { articlePath } from "../../../routing/paths";
 import { HiPencil } from "react-icons/hi2";
 import { Link } from "react-router-dom";
+import MediaImage from "../../../ui/MediaImage";
 
 function ArticleItemAdminPanel({ article, setEditArticleId }) {
   const { id, title } = article;
@@ -9,13 +10,13 @@ function ArticleItemAdminPanel({ article, setEditArticleId }) {
   return (
     <div key={id} className="overflow-hidden rounded-lg border shadow">
       <Link to={articlePath(id)} target="_blank">
-        <img src={image} alt={title} />
+        <MediaImage src={image} alt={title} kind="article" className="w-full" />
       </Link>
       <div className="p-2">
         <Link
           to={articlePath(id)}
           target="_blank"
-          className="line-clamp-3 h-[60px] text-sm font-medium"
+          className="line-clamp-2 h-10 text-sm font-medium leading-5"
         >
           {title}
         </Link>

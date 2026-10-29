@@ -1,4 +1,5 @@
 import { Star } from "@mui/icons-material";
+import MediaImage from "../../ui/MediaImage";
 
 function Comments({ comments }) {
   if (!comments?.length) return null;
@@ -15,10 +16,11 @@ function Comments({ comments }) {
             <div className="flex items-center justify-between border-b pb-4">
               <div className="flex items-center gap-3.5">
                 <div className="h-16 w-16 overflow-hidden rounded-full">
-                  <img
-                    src={comment.user?.avatarUrl || "user.jpeg"}
+                  <MediaImage
+                    src={comment.user?.avatarUrl}
                     className="h-full w-full"
                     alt={comment.user?.fullName}
+                    kind="avatar"
                   />
                 </div>
                 <div className="space-y-1">

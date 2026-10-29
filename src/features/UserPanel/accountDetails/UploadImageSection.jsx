@@ -1,14 +1,17 @@
 import { CircularProgress } from "@mui/material";
 import { HiMiniArrowPathRoundedSquare } from "react-icons/hi2";
+import MediaImage from "../../../ui/MediaImage";
 
 function UploadImageSection({ avatarUrlPath, isUploading, register }) {
   return (
     <div className="pb-6">
       <div className="relative flex h-28 w-28 vxs:h-32 vxs:w-32">
-        <img
-          src={avatarUrlPath || "/user.jpeg"}
+        <MediaImage
+          src={avatarUrlPath}
           className="w-full rounded-full ring-2 ring-violet-500"
           alt="user"
+          kind="avatar"
+          loading="eager"
         />
         {isUploading && (
           <div className="absolute inset-0 flex h-full w-full items-center justify-center bg-white/50 text-gray-400">

@@ -35,6 +35,7 @@ function ThumbSwiper({ product }) {
             className="w-full"
             src={image}
             alt={`${title}-general`}
+            loading="eager"
           />
         </SwiperSlide>
         {otherImages?.length > 0 &&

@@ -1,3 +1,5 @@
+import MediaImage from "../../ui/MediaImage";
+
 function FeatureItem({ feature }) {
   const { title, description, shadowColor, image } = feature;
 
@@ -8,8 +10,13 @@ function FeatureItem({ feature }) {
         boxShadow: `0 2px 6px -1.2px ${shadowColor}`,
       }}
     >
-      <div className="w-[70px] sm:w-[118px]">
-        <img src={image?.url} className="w-full" alt={title} />
+      <div className="w-[70px] shrink-0 sm:w-[118px]">
+        <MediaImage
+          src={image?.url}
+          className="w-full"
+          alt={title}
+          kind="feature"
+        />
       </div>
       <div className="flex w-3/4 flex-col gap-4 sm:w-full">
         <h3 className="text-start text-sm font-bold sm:text-center sm:text-lg md:text-xl">

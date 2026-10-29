@@ -1,4 +1,5 @@
 import QueryError from "../../ui/QueryError";
+import MediaImage from "../../ui/MediaImage";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, FreeMode } from "swiper/modules";
 import { usePopularBrands } from "./usePopularBrands";
@@ -66,10 +67,11 @@ function MostPopularBrands() {
                   key={brand.id}
                 >
                   <div className="flex h-[120px] w-[120px] items-center justify-center">
-                    <img
+                    <MediaImage
                       src={brand.image?.url}
-                      alt={`brand-${brand.id}`}
+                      alt={brand.title || brand.name || `Brand ${brand.id}`}
                       className="w-full"
+                      kind="brand"
                     />
                   </div>
                 </SwiperSlide>
