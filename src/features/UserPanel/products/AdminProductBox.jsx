@@ -4,10 +4,11 @@ import { Link } from "react-router-dom";
 
 import { useState } from "react";
 import EditProductModal from "./EditProductModal";
+import ProductImage from "../../../ui/ProductImage";
 
 function AdminProductBox({ product }) {
   const { id, title } = product;
-  const image = product.images?.[0]?.url || "/no-image.webp";
+  const image = product.images?.[0]?.url;
   const [isOpenEditModal, setIsOpenEditModal] = useState("");
   const onOpen = () => setIsOpenEditModal(id);
   const onClose = () => setIsOpenEditModal("");
@@ -18,7 +19,7 @@ function AdminProductBox({ product }) {
     >
       <>
         <Link className="border-b-2 pb-2" to={productPath(id)}>
-          <img src={image} alt="" />
+          <ProductImage className="w-full" src={image} alt={title} />
         </Link>
       </>
       <>

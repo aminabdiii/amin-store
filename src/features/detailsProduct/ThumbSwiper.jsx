@@ -2,6 +2,7 @@ import { useState } from "react";
 import { FreeMode, Keyboard, Navigation, Thumbs } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Offer from "../../ui/Offer";
+import ProductImage from "../../ui/ProductImage";
 
 // Import Swiper styles
 import "swiper/css";
@@ -12,15 +13,15 @@ import "swiper/css/thumbs";
 function ThumbSwiper({ product }) {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const { discount, images = [], title, isAvailable } = product;
-  const image = images[0]?.url || "/no-image.webp";
-  const otherImages = images.slice(1).map((item) => item.url);
+  const image = images?.[0]?.url;
+  const otherImages = (images ?? []).slice(1).map((item) => item?.url);
 
   return (
     <div
       className={`relative flex w-full max-w-md flex-grow flex-col gap-y-3 rounded-sm p-3 shadow md:max-w-sm 850:max-w-md`}
     >
       <Swiper
-        loop={true}
+        loop={otherImages.length > 0}
         spaceBetween={10}
         thumbs={{
           swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null,
@@ -30,15 +31,20 @@ function ThumbSwiper({ product }) {
         className="mySwiper2 w-full cursor-grab active:cursor-grabbing"
       >
         <SwiperSlide className="main-swiper !flex !justify-center">
-          <img src={image} alt={`${title}-general`} />
+          <ProductImage
+            className="w-full"
+            src={image}
+            alt={`${title}-general`}
+          />
         </SwiperSlide>
         {otherImages?.length > 0 &&
           otherImages?.map((image, index) => (
             <SwiperSlide
-              key={image}
+              key={`${image}-${index}`}
               className="main-swiper !flex !justify-center"
             >
-              <img
+              <ProductImage
+                className="w-full"
                 src={image}
                 alt={`${title.split(" ").join("")}-${index + 1}`}
               />
@@ -48,7 +54,7 @@ function ThumbSwiper({ product }) {
       {otherImages?.length > 0 && (
         <Swiper
           onSwiper={setThumbsSwiper}
-          loop={true}
+          loop={otherImages.length >= 4}
           spaceBetween={10}
           slidesPerView={4}
           freeMode={true}
@@ -57,15 +63,20 @@ function ThumbSwiper({ product }) {
           className="mySwiper w-full"
         >
           <SwiperSlide className="!flex cursor-pointer !justify-center">
-            <img src={image} alt={`${title}-thumbnail`} />
+            <ProductImage
+              className="w-full"
+              src={image}
+              alt={`${title}-thumbnail`}
+            />
           </SwiperSlide>
 
           {otherImages?.map((image, index) => (
             <SwiperSlide
               className="!flex cursor-pointer !justify-center"
-              key={image}
+              key={`${image}-${index}`}
             >
-              <img
+              <ProductImage
+                className="w-full"
                 src={image}
                 alt={`${title.split(" ").join("")}-${index + 1}`}
               />

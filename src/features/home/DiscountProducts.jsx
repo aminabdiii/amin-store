@@ -53,7 +53,7 @@ function DiscountProducts() {
       )}
       {!isLoading && discountProducts.length > 0 && (
         <Swiper
-          className="mySwiper relative mt-5 !px-1 !pb-7"
+          className="mySwiper relative mt-5 !px-1 !pb-7 [&_.swiper-wrapper]:items-stretch"
           modules={[Autoplay, Pagination, Grid]}
           grid={{ fill: "column", rows: 1 }}
           spaceBetween={20}
@@ -76,7 +76,10 @@ function DiscountProducts() {
         >
           {discountProducts.length > 0 &&
             discountProducts.map((product) => (
-              <SwiperSlide key={product.id} className="main-swiper hover:z-20">
+              <SwiperSlide
+                key={product.id}
+                className="main-swiper !h-auto hover:z-20"
+              >
                 <Product product={product} />
               </SwiperSlide>
             ))}

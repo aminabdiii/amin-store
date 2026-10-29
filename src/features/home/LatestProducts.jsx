@@ -54,7 +54,7 @@ function LatestProducts() {
 
       {products?.length > 0 && !isLoading && (
         <Swiper
-          className="mySwiper relative mt-5 !px-1 !pb-7"
+          className="mySwiper relative mt-5 !px-1 !pb-7 [&_.swiper-wrapper]:items-stretch"
           modules={[Autoplay, Pagination]}
           grid={{ fill: "column", rows: 1 }}
           spaceBetween={20}
@@ -79,7 +79,7 @@ function LatestProducts() {
             products.map((product) => (
               <SwiperSlide
                 key={product.id}
-                className="main-swiper h-full hover:z-20"
+                className="main-swiper !h-auto hover:z-20"
               >
                 <Product product={product} />
               </SwiperSlide>

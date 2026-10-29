@@ -5,6 +5,7 @@ import { useState } from "react";
 import { formatMoney } from "../../../utils/money";
 import { nextOrderStatuses } from "../../../utils/orderStatus";
 import Swal from "sweetalert2";
+import ProductImage from "../../../ui/ProductImage";
 function Order({ purchaseItem, type = "user", deliveryPurchase }) {
   const {
     status,
@@ -84,9 +85,9 @@ function Order({ purchaseItem, type = "user", deliveryPurchase }) {
         {items.map((item) => {
           const content = (
             <>
-              <img
+              <ProductImage
                 className="w-16 vxs:w-20"
-                src={item.imageUrl || "/no-image.webp"}
+                src={item.imageUrl}
                 alt={item.title}
               />
               <span className="absolute left-2 top-0 flex h-6 w-6 items-center justify-center rounded-full bg-violet-500 text-xs font-medium text-white">

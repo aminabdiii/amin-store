@@ -3,6 +3,7 @@ import { productPath } from "../../routing/paths";
 import { FaClockRotateLeft, FaDollarSign } from "react-icons/fa6";
 import { HiStar } from "react-icons/hi";
 import { Link } from "react-router-dom";
+import ProductImage from "../../ui/ProductImage";
 
 function Product({ product }) {
   const {
@@ -22,18 +23,14 @@ function Product({ product }) {
   return (
     <Link
       to={productPath(id)}
-      className={`group relative flex h-[inherit] w-full flex-col justify-between gap-1 rounded-md border bg-white py-4 transition-all duration-200 hover:z-10 hover:shadow-md sm:flex-col ${isPreSale && isAvailable && "hover:shadow-orange-500"} ${isAvailable && !isPreSale && "hover:shadow-violet-500"} ${!isAvailable && "grayscale hover:shadow-gray-500"}`}
+      className={`group relative flex h-full w-full min-w-0 flex-col justify-between gap-1 rounded-md border bg-white py-4 transition-all duration-200 hover:z-10 hover:shadow-md sm:flex-col ${isPreSale && isAvailable && "hover:shadow-orange-500"} ${isAvailable && !isPreSale && "hover:shadow-violet-500"} ${!isAvailable && "grayscale hover:shadow-gray-500"}`}
     >
-      <div className="flex justify-center p-2">
-        <img
-          className="!w-[400px]"
-          src={images?.[0]?.url || "/no-image.webp"}
-          alt={title}
-        />
+      <div className="shrink-0 p-2">
+        <ProductImage className="w-full" src={images?.[0]?.url} alt={title} />
       </div>
-      <div className="flex !min-h-40 flex-col justify-between gap-1 px-2 sm:mx-auto sm:h-full sm:w-11/12 sm:gap-6 sm:px-0">
+      <div className="flex !min-h-40 flex-1 flex-col justify-between gap-1 px-2 sm:mx-auto sm:w-11/12 sm:gap-6 sm:px-0">
         <div className="flex flex-col gap-y-3">
-          <h4 className="line-clamp-2 overflow-hidden text-xs font-semibold vxs:text-[11px] 450:text-sm">
+          <h4 className="line-clamp-2 min-h-[2.5em] overflow-hidden text-xs font-semibold !leading-[1.25] vxs:text-[11px] 450:text-sm">
             {title}
           </h4>
           <div className="flex items-center justify-between gap-1">
@@ -66,13 +63,9 @@ function Product({ product }) {
               </span>
             )}
           </div>
-          {discount > 0 ? (
-            <span className="text-xs text-gray-400 line-through">
-              {formatMoney(price)}
-            </span>
-          ) : (
-            <div className="w-full select-none text-white">_</div>
-          )}
+          <span className="h-4 text-xs text-gray-400 line-through">
+            {discount > 0 ? formatMoney(price) : "\u00a0"}
+          </span>
         </div>
       </div>
       {isPreSale && isAvailable && (

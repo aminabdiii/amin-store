@@ -93,7 +93,7 @@ function Cart() {
             <ProductContainer key={item.variantId}>
               <ImageContainer>
                 <Image
-                  src={item.imageUrl || "/no-image.webp"}
+                  src={item.imageUrl}
                   alt={item.title}
                   path={productPath(item.productId)}
                 />

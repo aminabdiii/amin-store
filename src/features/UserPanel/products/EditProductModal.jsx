@@ -14,6 +14,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import ProductsInputBox from "./ProductsInputBox";
 import { submitProductUpdate } from "./productPayload";
+import ProductImage from "../../../ui/ProductImage";
 
 function EditProductModal({ onClose, isOpenEditModal }) {
   const [deletedImageList, setDeletedImageList] = useState([]);
@@ -117,8 +118,8 @@ function EditProductModal({ onClose, isOpenEditModal }) {
     saleEnabled,
     isPreSale,
   } = product;
-  const image = images[0]?.url;
-  const otherImages = images.slice(1);
+  const image = images?.[0]?.url;
+  const otherImages = (images ?? []).slice(1);
   async function editProductHandler(values) {
     const save = (payload) => updateProduct(payload);
 
@@ -359,7 +360,7 @@ function EditProductModal({ onClose, isOpenEditModal }) {
             </div>
             <div className="flex w-full flex-col justify-between gap-3 xs:col-span-2 xs:flex-row">
               <div className="basis-1/2">
-                <img src={image} className="h-14 w-14" alt={title} />
+                <ProductImage src={image} className="h-14 w-14" alt={title} />
               </div>
               <div className="flex basis-1/2 flex-wrap gap-2">
                 {otherImages?.map((image, index) => (
@@ -367,7 +368,7 @@ function EditProductModal({ onClose, isOpenEditModal }) {
                     key={image.id}
                     className={`relative h-14 w-14 ${deletedImageList.includes(image.url) ? "hidden" : "block"}`}
                   >
-                    <img
+                    <ProductImage
                       src={image.url}
                       className="h-full w-full"
                       alt={`photo-${index}`}
