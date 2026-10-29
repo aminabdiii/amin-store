@@ -1,48 +1,24 @@
-import { supabase } from "../../supabase";
-
-export async function getUserPurchases({ userId, purchasePerPage, pageParam }) {
-  const { data, error } = await supabase
-    .from("purchases")
-    .select("*")
-    .eq("userId", userId)
-    .order("created_at", { ascending: false })
-    .range((pageParam - 1) * purchasePerPage, pageParam * purchasePerPage - 1);
-
-  if (error) throw new Error(error);
-
-  return data;
+import { request } from "./apiClient";
+export function getUserPurchases({ purchasePerPage, pageParam }) {
+  return request("/orders", {
+    query: { page: pageParam, limit: purchasePerPage },
+  });
 }
-export async function getAllPurchases({ pageParam, numPurchasePerPage }) {
-  const { data, error } = await supabase
-    .from("purchases")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .range(
-      (pageParam - 1) * numPurchasePerPage,
-      pageParam * numPurchasePerPage - 1,
-    );
-
-  if (error) throw new Error(error);
-
-  return data;
+export function getAllPurchases({ pageParam, numPurchasePerPage }) {
+  return request("/admin/orders", {
+    query: { page: pageParam, limit: numPurchasePerPage },
+  });
 }
-
-export async function insertUserPurchases({ ...info }) {
-  const { data, error } = await supabase
-    .from("purchases")
-    .insert([{ ...info }]);
-
-  if (error) throw new Error(error);
-
-  return data;
+export function insertUserPurchases({ idempotencyKey }) {
+  return request("/orders", {
+    method: "POST",
+    body: {},
+    headers: { "Idempotency-Key": idempotencyKey },
+  });
 }
-export async function deliveredPurchaseApi({ id }) {
-  const { data, error } = await supabase
-    .from("purchases")
-    .update({ isDelivered: true })
-    .eq("id", id);
-
-  if (error) throw new Error(error);
-
-  return data;
+export function deliveredPurchaseApi({ id, status }) {
+  return request(`/admin/orders/${id}/status`, {
+    method: "PATCH",
+    body: { status },
+  });
 }

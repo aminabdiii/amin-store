@@ -5,14 +5,13 @@ import { toast } from "react-toastify";
 export function useInsertNewArticle() {
   const queryClient = useQueryClient();
 
-  const { mutate: insertNewArticle } = useMutation({
+  const { mutateAsync: insertNewArticle } = useMutation({
     mutationFn: insertNewArticleApi,
 
     onSuccess() {
       toast.success("insert new article has been successfully");
-      queryClient.invalidateQueries({
-        queryKey: ["latestArticles", "articles"],
-      });
+      queryClient.invalidateQueries({ queryKey: ["latestArticles"] });
+      queryClient.invalidateQueries({ queryKey: ["articles"] });
     },
     onError(err) {
       toast.error(err.message);

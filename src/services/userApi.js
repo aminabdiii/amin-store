@@ -1,82 +1,47 @@
-import { adminAuthClient, supabase } from "../../supabase";
-
+import { request, allPages } from "./apiClient";
+import { readSession, clearSession } from "./authSession";
 export async function getUserApi() {
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
-
-  if (error && error.name !== "AuthSessionMissingError") throw error;
-
-  return user;
+  if (!readSession()) return null;
+  try {
+    return await request("/users/me");
+  } catch (error) {
+    if (error.statusCode === 401) return null;
+    throw error;
+  }
 }
-
 export async function logoutApi() {
-  const { error } = await supabase.auth.signOut();
-
-  if (error) throw new Error(error);
+  try {
+    if (readSession()) await request("/auth/logout", { method: "POST" });
+  } finally {
+    clearSession();
+  }
 }
-
-export async function uploadAvatar({ name, file }) {
-  const { data, error } = await supabase.storage
-    .from("usersProfile")
-    .upload(name, file, { upsert: true });
-
-  if (error) throw new Error(error);
-
-  return data;
+export function uploadAvatar({ file }) {
+  const body = new FormData();
+  body.append("file", file);
+  return request("/media/avatar", { method: "POST", body });
 }
-
-export async function updateUser({ avatar, fullName }) {
-  const { data, error } = await supabase.auth.updateUser({
-    data: { avatar, fullName },
-    role: "admin",
+export function updateUser({ fullName }) {
+  return request("/users/me", { method: "PATCH", body: { fullName } });
+}
+export async function updateUserPassword({ currentPassword, password }) {
+  const result = await request("/auth/password", {
+    method: "POST",
+    body: { currentPassword, password },
   });
-
-  if (error) throw new Error(error);
-
-  return data;
+  clearSession();
+  return result;
 }
-
-export async function updateUserPassword({ password }) {
-  const { data, error } = await supabase.auth.updateUser({
-    password,
-  });
-
-  if (error) throw new Error(error);
-
-  return data;
-}
-
 export async function userRoleApi() {
-  const { id } = await getUserApi();
-
-  const { data, error } = await supabase
-    .from("users")
-    .select("role")
-    .eq("userId", id)
-    .single();
-
-  if (error) throw new Error(error);
-
-  return data;
+  const user = await getUserApi();
+  return user ? { role: user.role } : null;
 }
-
 export async function getAllUsers() {
-  const { data, error } = await adminAuthClient.listUsers({
-    page: 1,
-    perPage: 100,
-  });
-
-  if (error) throw new Error(error);
-
-  return data;
+  return { users: await allPages("/admin/users") };
 }
-
-export async function deleteUserApi({ userId }) {
-  const { data, error } = await adminAuthClient.deleteUser(userId);
-
-  if (error) throw new Error(error);
-
-  return data;
+export function deleteUserApi({ userId }) {
+  return request(`/admin/users/${userId}`, {
+    method: "PATCH",
+    body: { active: false },
+  });
 }

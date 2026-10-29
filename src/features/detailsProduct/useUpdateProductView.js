@@ -8,7 +8,7 @@ export function useUpdateProductView() {
 
   const { mutate: productViewUpdater, error } = useMutation({
     mutationKey: [`product-${productId}`],
-    mutationFn: ({ view }) => updateProductView({ view, id: productId }),
+    mutationFn: () => updateProductView({ id: productId }),
 
     onError: (error) => {
       toast.error(error.message);

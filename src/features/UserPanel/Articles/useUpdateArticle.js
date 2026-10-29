@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 export function useUpdateArticle() {
   const queryClient = useQueryClient();
 
-  const { mutate: updateArticle } = useMutation({
+  const { mutateAsync: updateArticle } = useMutation({
     mutationFn: updateArticleApi,
 
     onSuccess() {

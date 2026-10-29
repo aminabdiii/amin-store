@@ -1,3 +1,4 @@
+import { formatMoney, discountedPrice } from "../../utils/money";
 import { productPath } from "../../routing/paths";
 import { FaClockRotateLeft, FaDollarSign } from "react-icons/fa6";
 import { HiStar } from "react-icons/hi";
@@ -7,18 +8,16 @@ function Product({ product }) {
   const {
     discount,
     id,
-    image,
-    postType,
+    images,
+    shippingLeadDays,
     price,
     title,
-    rate,
+    rating,
     isPreSale,
     isAvailable,
   } = product;
 
-  const finallyPrice = discount
-    ? Math.floor(price - (price * discount) / 100)
-    : price;
+  const finallyPrice = discountedPrice(price, discount);
 
   return (
     <Link
@@ -28,7 +27,7 @@ function Product({ product }) {
       <div className="flex justify-center p-2">
         <img
           className="!w-[400px]"
-          src={image || "no-image.webp"}
+          src={images?.[0]?.url || "/no-image.webp"}
           alt={title}
         />
       </div>
@@ -40,16 +39,16 @@ function Product({ product }) {
           <div className="flex items-center justify-between gap-1">
             <div className="flex items-center gap-1">
               <span className="text-xs font-medium">
-                {postType === 1 && isAvailable && "today"}
-                {postType === 2 && isAvailable && "tomorrow"}
-                {postType === 3 && isAvailable && "later"}
+                {shippingLeadDays === 1 && isAvailable && "today"}
+                {shippingLeadDays === 2 && isAvailable && "tomorrow"}
+                {shippingLeadDays > 2 && isAvailable && "later"}
                 {!isAvailable && "Out of stock"}
               </span>
               {isAvailable && <FaClockRotateLeft color="blue" size={14} />}
             </div>
 
             <div className="flex items-center gap-0.5 text-lg font-semibold text-yellow-400">
-              <span>{rate ? rate : "-"}</span>
+              <span>{rating || "-"}</span>
               <HiStar />
             </div>
           </div>
@@ -59,7 +58,7 @@ function Product({ product }) {
           <div className="flex items-center justify-between pl-1">
             <span className="flex items-center gap-1 text-sm font-medium vxs:text-base xs:text-lg">
               <FaDollarSign className="text-green-400" />
-              {finallyPrice.toLocaleString() + ".00"}
+              {formatMoney(finallyPrice)}
             </span>
             {discount > 0 && (
               <span className="animate-pulse rounded-full bg-red-500 px-1 py-px text-xs text-white xs:text-sm">
@@ -69,7 +68,7 @@ function Product({ product }) {
           </div>
           {discount > 0 ? (
             <span className="text-xs text-gray-400 line-through">
-              {price.toLocaleString() + ".00"}
+              {formatMoney(price)}
             </span>
           ) : (
             <div className="w-full select-none text-white">_</div>

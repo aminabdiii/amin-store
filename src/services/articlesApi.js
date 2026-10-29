@@ -1,53 +1,17 @@
-import { supabase } from "../../supabase";
-
+import { request, allPages, detail } from "./apiClient";
 export async function getLatestArticles() {
-  const { data, error } = await supabase
-    .from("articles")
-    .select("id, image, title")
-    .limit(6)
-    .order("created_at", { ascending: false });
-
-  if (error) throw new Error(error);
-
-  return data;
+  return (await request("/articles", { auth: false, query: { limit: 6 } }))
+    .data;
 }
-export async function getArticles() {
-  const { data, error } = await supabase
-    .from("articles")
-    .select("id, image, title")
-    .order("created_at", { ascending: false });
-
-  if (error) throw new Error(error);
-
-  return data;
+export function getArticles() {
+  return allPages("/articles", { auth: false });
 }
-
-export async function getDetailsArticle({ id }) {
-  const { data, error } = await supabase
-    .from("articles")
-    .select("*")
-    .eq("id", id)
-    .maybeSingle();
-
-  if (error) throw error;
-
-  return data;
+export function getDetailsArticle({ id }) {
+  return detail(`/articles/${id}`);
 }
-
-export async function insertNewArticleApi({ ...values }) {
-  const { data, error } = await supabase.from("articles").insert({ ...values });
-
-  if (error) throw new Error(error);
-
-  return data;
+export function insertNewArticleApi(values) {
+  return request("/admin/articles", { method: "POST", body: values });
 }
-export async function updateArticleApi({ id, ...values }) {
-  const { data, error } = await supabase
-    .from("articles")
-    .update({ ...values })
-    .eq("id", id);
-
-  if (error) throw new Error(error);
-
-  return data;
+export function updateArticleApi({ id, ...values }) {
+  return request(`/admin/articles/${id}`, { method: "PATCH", body: values });
 }

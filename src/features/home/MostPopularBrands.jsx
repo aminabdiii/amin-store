@@ -67,7 +67,7 @@ function MostPopularBrands() {
                 >
                   <div className="flex h-[120px] w-[120px] items-center justify-center">
                     <img
-                      src={brand.image}
+                      src={brand.image?.url}
                       alt={`brand-${brand.id}`}
                       className="w-full"
                     />

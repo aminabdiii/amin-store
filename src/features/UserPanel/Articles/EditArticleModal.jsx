@@ -1,3 +1,4 @@
+import QueryError from "../../../ui/QueryError";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import { CircularProgress, Modal } from "@mui/material";
 import { useForm } from "react-hook-form";
@@ -27,38 +28,59 @@ import { useArticleInformation } from "./useArticleInformation";
 import { toast } from "react-toastify";
 import { useUpdateArticle } from "./useUpdateArticle";
 import { useState } from "react";
+import { useUploadProductImages } from "../products/useUploadProductImages";
 
 function EditArticleModal({ onClose, articleId }) {
-  const { handleSubmit, register } = useForm();
-  const { articleInformation, isLoading } = useArticleInformation({
-    articleId,
-  });
+  const {
+    handleSubmit,
+    register,
+    formState: { isSubmitting },
+  } = useForm();
+  const { articleInformation, error, refetch, isLoading } =
+    useArticleInformation({
+      articleId,
+    });
   const { updateArticle } = useUpdateArticle();
+  const { uploadProductImage } = useUploadProductImages();
   const [content, setContent] = useState("");
 
   if (isLoading) {
     return (
-      <Modal open={articleId} onClose={onClose}>
+      <Modal open={!!articleId} onClose={onClose}>
         <div className="absolute left-1/2 top-1/2 flex h-[600px] w-11/12 max-w-4xl -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-xl bg-white">
           <CircularProgress />
         </div>
       </Modal>
     );
   }
+  if (error || !articleInformation)
+    return (
+      <Modal open={!!articleId} onClose={onClose}>
+        <div className="mx-auto my-20 max-w-xl bg-white p-4">
+          <QueryError onRetry={refetch} />
+        </div>
+      </Modal>
+    );
+
   const {
     title,
     content: alreadyContent,
-    image: alreadyImageUrl,
+    image: alreadyImage,
   } = articleInformation;
-  const newImageUrl = `https://ddjggonagtvxnthvjxtr.supabase.co/storage/v1/object/public/articles/${title}`;
-
-  function handleEditArticle({ title, image }) {
-    updateArticle({
-      id: articleId,
-      title,
-      image: image.length ? newImageUrl : alreadyImageUrl,
-      content: content || alreadyContent,
-    });
+  async function handleEditArticle({ title, image }) {
+    try {
+      const uploaded = image.length
+        ? await uploadProductImage({ fileBody: image[0] })
+        : null;
+      await updateArticle({
+        id: articleId,
+        title,
+        imageId: uploaded?.id ?? alreadyImage?.id,
+        content: content || alreadyContent,
+      });
+    } catch (error) {
+      toast.error(error.message);
+    }
   }
   function handleErrorEditArticle(errors) {
     for (let key in errors) {
@@ -76,7 +98,7 @@ function EditArticleModal({ onClose, articleId }) {
   };
 
   return (
-    <Modal open={articleId} onClose={onClose}>
+    <Modal open={!!articleId} onClose={onClose}>
       <div className="absolute left-1/2 top-1/2 h-[600px] w-11/12 max-w-4xl -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-xl bg-white p-5">
         <form
           onSubmit={handleSubmit(handleEditArticle, handleErrorEditArticle)}
@@ -165,6 +187,7 @@ function EditArticleModal({ onClose, articleId }) {
             <button
               className="basis-1/2 rounded-lg bg-violet-500 py-2 uppercase text-white xs:basis-1/4"
               type="submit"
+              disabled={isSubmitting}
             >
               submit
             </button>

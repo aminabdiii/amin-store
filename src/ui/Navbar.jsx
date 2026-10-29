@@ -55,15 +55,15 @@ function Navbar({ user, isLoading, cartProductLength, gettingCartItems }) {
         <li className="max-w-[169px] text-sm">
           {isLoading && <CircularProgress color="secondary" />}
 
-          {!isLoading && user?.user_metadata?.userName && (
+          {!isLoading && user?.username && (
             <Link className={`py-8 normal-case`} to="/userPanel">
               <div className="flex items-center gap-1 rounded-full bg-gray-100 px-5 py-2">
                 <HiOutlineUser size={24} />
-                {user.user_metadata.userName.slice(0, 12)}
+                {user.username.slice(0, 12)}
               </div>
             </Link>
           )}
-          {!isLoading && !user?.user_metadata?.userName && (
+          {!isLoading && !user?.username && (
             <Link className={`py-8`} to="/login">
               <div className="flex items-center gap-1 rounded-full bg-gray-100 px-5 py-2">
                 <HiArrowRightEndOnRectangle size={24} />

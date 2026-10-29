@@ -8,7 +8,9 @@ export function useRelatedProducts({ category, expectProductId }) {
     error,
     refetch,
   } = useQuery({
-    queryKey: [`related_products_${category}-${expectProductId}`],
+    queryKey: [
+      `related_products_${category?.slug ?? category}-${expectProductId}`,
+    ],
     queryFn: () => getRelatedProducts({ category, expectProductId }),
   });
 

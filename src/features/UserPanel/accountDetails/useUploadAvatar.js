@@ -3,7 +3,7 @@ import { uploadAvatar } from "../../../services/userApi";
 import { toast } from "react-toastify";
 
 export function useUploadAvatar() {
-  const { mutate: avatarUploader, isPending: isUploading } = useMutation({
+  const { mutateAsync: avatarUploader, isPending: isUploading } = useMutation({
     mutationFn: uploadAvatar,
 
     onSuccess: () => {
@@ -12,7 +12,7 @@ export function useUploadAvatar() {
       });
     },
     onError: (error) => {
-      toast.error(error, {
+      toast.error(error.message, {
         autoClose: 3600,
       });
     },

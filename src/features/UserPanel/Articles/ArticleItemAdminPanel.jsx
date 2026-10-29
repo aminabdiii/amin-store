@@ -3,7 +3,8 @@ import { HiPencil } from "react-icons/hi2";
 import { Link } from "react-router-dom";
 
 function ArticleItemAdminPanel({ article, setEditArticleId }) {
-  const { id, image, title } = article;
+  const { id, title } = article;
+  const image = article.image?.url ?? article.image;
 
   return (
     <div key={id} className="overflow-hidden rounded-lg border shadow">

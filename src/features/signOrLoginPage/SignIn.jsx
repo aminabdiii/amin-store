@@ -31,7 +31,7 @@ function SignIn() {
       { fullName, userName, email, password },
       {
         onSuccess: (data) => {
-          navigate(data.session ? getReturnPath(state) : "/home", {
+          navigate(data.accessToken ? getReturnPath(state) : "/home", {
             replace: true,
           });
           reset();
@@ -61,11 +61,13 @@ function SignIn() {
                 className="w-full rounded border p-2 px-3 outline-none focus:ring-2 focus:ring-[#3f4bff]"
                 placeholder="fullName"
                 {...register("fullName", {
-                  required: "fullName field is required",
-                  pattern: {
-                    value: /^[A-Za-z\s]+$/,
-                    message: "Only English letters are allowed!",
+                  required: "Full name is required.",
+                  maxLength: {
+                    value: 200,
+                    message: "Use at most 200 characters.",
                   },
+                  validate: (value) =>
+                    !!value.trim() || "Enter your full name.",
                 })}
               />
               {errors["fullName"]?.message && (
@@ -80,11 +82,19 @@ function SignIn() {
                 className="w-full rounded border p-2 px-3 outline-none focus:ring-2 focus:ring-[#3f4bff]"
                 placeholder="userName"
                 {...register("userName", {
-                  required: "userName field is required",
+                  required: "Username is required.",
+                  minLength: {
+                    value: 3,
+                    message: "Use at least 3 characters.",
+                  },
+                  maxLength: {
+                    value: 100,
+                    message: "Use at most 100 characters.",
+                  },
                   pattern: {
-                    value: /^[A-Za-z0-9@]+$/,
+                    value: /^[a-zA-Z0-9_.-]+$/,
                     message:
-                      "Only English letters, numbers, and @ are allowed!",
+                      "Use letters, numbers, underscores, dots or hyphens.",
                   },
                 })}
               />
@@ -120,11 +130,14 @@ function SignIn() {
                 className="w-full rounded border p-2 px-3 outline-none focus:ring-2 focus:ring-[#3f4bff]"
                 placeholder="Password"
                 {...register("password", {
-                  required: "password field is required",
-                  pattern: {
-                    value: /^[A-Za-z0-9@]{8,}$$/,
-                    message:
-                      "Minimum 8 characters, only English letters, numbers, and @ allowed",
+                  required: "Password is required.",
+                  minLength: {
+                    value: 12,
+                    message: "Use at least 12 characters.",
+                  },
+                  maxLength: {
+                    value: 128,
+                    message: "Use at most 128 characters.",
                   },
                 })}
               />

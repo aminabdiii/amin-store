@@ -5,8 +5,11 @@ import { toast } from "react-toastify";
 export function useInsertProduct() {
   const queryClient = useQueryClient();
 
-  const { mutate: insetNewProduct, isPending } = useMutation({
+  const { mutateAsync: insetNewProduct, isPending } = useMutation({
     mutationFn: insertNewProductApi,
+    onError(error) {
+      toast.error(error.message);
+    },
     onSuccess() {
       toast.success("create new product has been successfully");
       queryClient.invalidateQueries();

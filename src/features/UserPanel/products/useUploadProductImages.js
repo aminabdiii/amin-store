@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { uploadProductImageApi } from "../../../services/uploadProductImageApi";
 
 export function useUploadProductImages() {
-  const { mutate: uploadProductImage } = useMutation({
+  const { mutateAsync: uploadProductImage } = useMutation({
     mutationFn: uploadProductImageApi,
   });
 

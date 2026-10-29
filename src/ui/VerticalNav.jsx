@@ -65,13 +65,13 @@ function Window({ user, cartProductLength }) {
       </h1>
       <ul className="divide-y capitalize" onClick={() => open(false)}>
         <li>
-          {user?.user_metadata?.userName ? (
+          {user?.username ? (
             <Link
               className="flex flex-wrap items-center gap-3 p-4 xs:p-5"
               to="/userPanel"
             >
               <HiOutlineUser size={23} />
-              <span>{user.user_metadata.userName}</span>
+              <span>{user.username}</span>
             </Link>
           ) : (
             <Link

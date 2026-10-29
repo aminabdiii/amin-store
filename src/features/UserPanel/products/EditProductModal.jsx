@@ -1,6 +1,7 @@
+import QueryError from "../../../ui/QueryError";
 import { CircularProgress, Modal } from "@mui/material";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useEffect, useRef, useState } from "react";
+import { useFieldArray, useForm } from "react-hook-form";
 import { useCategories } from "../../../hooks/useCategories";
 import { HiUpload } from "react-icons/hi";
 import { useProductInformation } from "./useProductInformation";
@@ -8,25 +9,80 @@ import { Close } from "@mui/icons-material";
 import { toast } from "react-toastify";
 import { useUploadProductImages } from "./useUploadProductImages";
 import { useUpdateProduct } from "./useUpdateProduct";
+import { updateInventoryApi } from "../../../services/productsApi";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import ProductsInputBox from "./ProductsInputBox";
+import { submitProductUpdate } from "./productPayload";
 
 function EditProductModal({ onClose, isOpenEditModal }) {
   const [deletedImageList, setDeletedImageList] = useState([]);
 
-  const { handleSubmit, register, watch } = useForm();
+  const {
+    handleSubmit,
+    register,
+    control,
+    formState: { isSubmitting },
+  } = useForm();
+  const {
+    fields: optionGroups,
+    append,
+    remove,
+    replace,
+  } = useFieldArray({ control, name: "optionGroups" });
+  const initialized = useRef();
 
-  const { product, isLoading: gettingProductInformation } =
-    useProductInformation({ id: isOpenEditModal });
-  const { categories, isLoading: gettingCategories } = useCategories();
+  const {
+    product,
+    error: productError,
+    refetch: refetchProduct,
+    isLoading: gettingProductInformation,
+  } = useProductInformation({ id: isOpenEditModal });
+  const {
+    categories,
+    error: categoriesError,
+    refetch: refetchCategories,
+    isLoading: gettingCategories,
+  } = useCategories();
   const { uploadProductImage } = useUploadProductImages();
   const { updateProduct } = useUpdateProduct();
+  const queryClient = useQueryClient();
+  const {
+    mutate: updateInventory,
+    isPending: isUpdatingInventory,
+    isError: inventoryError,
+    isSuccess: inventoryUpdated,
+  } = useMutation({
+    mutationFn: updateInventoryApi,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [`product-${isOpenEditModal}`],
+      });
+      queryClient.invalidateQueries({ queryKey: ["admin-products"] });
+      queryClient.invalidateQueries({
+        predicate: (query) => String(query.queryKey[0]).startsWith("product"),
+      });
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+    },
+  });
+  const [inventoryDrafts, setInventoryDrafts] = useState({});
 
+  useEffect(() => {
+    if (product && initialized.current !== product.id) {
+      initialized.current = product.id;
+      replace(
+        (product.options ?? []).map((option) => ({
+          name: option.name,
+          values: option.values.map((value) => value.value).join(", "),
+        })),
+      );
+    }
+  }, [product, replace]);
   const isLoading = gettingProductInformation || gettingCategories;
 
   if (isLoading) {
     return (
-      <Modal open={isOpenEditModal} onClose={onClose}>
+      <Modal open={!!isOpenEditModal} onClose={onClose}>
         <div className="absolute left-1/2 top-1/2 h-[80dvh] w-full max-w-3xl -translate-x-1/2 -translate-y-1/2 overflow-y-scroll rounded-[27px] bg-white">
           <div className="flex h-full w-full items-center justify-center">
             <CircularProgress />
@@ -36,107 +92,47 @@ function EditProductModal({ onClose, isOpenEditModal }) {
     );
   }
 
+  if (productError || categoriesError || !product)
+    return (
+      <Modal open={!!isOpenEditModal} onClose={onClose}>
+        <div className="mx-auto my-20 max-w-xl bg-white p-4">
+          <QueryError
+            onRetry={() => {
+              refetchProduct();
+              refetchCategories();
+            }}
+          />
+        </div>
+      </Modal>
+    );
+
   const {
-    id,
     title,
     price,
     discount,
     category,
-    postType,
-    image,
-    otherImages,
+    shippingLeadDays,
+    images = product.images ?? [],
     description,
-    isAvailable,
+    saleEnabled,
     isPreSale,
-    chooseFields,
   } = product;
+  const image = images[0]?.url;
+  const otherImages = images.slice(1);
+  async function editProductHandler(values) {
+    const save = (payload) => updateProduct(payload);
 
-  function getChooseValues(checkValue) {
-    return chooseFields.find((field) => field.title.includes(checkValue))?.[
-      checkValue
-    ];
-  }
-
-  function editProductHandler(values) {
-    let chooseFields = [];
-    const {
-      title,
-      postType,
-      price,
-      discount,
-      category,
-      description,
-      isAvailable,
-      isPreSale,
-    } = values;
-
-    const optionalValues = {};
-
-    const otherImageLinks = [...values.otherImages]?.map(
-      (file) =>
-        `https://ddjggonagtvxnthvjxtr.supabase.co/storage/v1/object/public/products/otherImages/${values.title}/${file.name}`,
-    );
-
-    const generalImageLink = `https://ddjggonagtvxnthvjxtr.supabase.co/storage/v1/object/public/products/${values.image[0]?.name}`;
-
-    // split chooseFields inputs
-    const colors = values.colors?.split(",").map((item) => item.trim());
-    const guarantees = values.guarantees?.split(",").map((item) => item.trim());
-    const sizes = values?.sizes?.split(",").map((item) => item.trim());
-
-    // add to optionalValues object
-    if (colors?.length && watch("isDiffrentColors")) {
-      optionalValues.colors = colors;
-    }
-    if (guarantees?.length && watch("isDiffrentWarranty")) {
-      optionalValues.warranty = guarantees;
-    }
-    if (sizes?.length && watch("isDiffrentSizes")) {
-      optionalValues.sizes = sizes;
-    }
-
-    // upload image
-    [...values.otherImages]?.map((file) => {
-      uploadProductImage({
-        path: `products/otherImages/${values.title}`,
-        fileName: file.name,
-        fileBody: file,
+    try {
+      await submitProductUpdate({
+        product,
+        values,
+        upload: (file) => uploadProductImage({ fileBody: file }),
+        save,
+        deletedImageUrls: deletedImageList,
       });
-    });
-    if (values.image.length) {
-      uploadProductImage({
-        path: "products",
-        fileName: values.image[0].name,
-        fileBody: values.image[0],
-      });
+    } catch (error) {
+      toast.error(error.message);
     }
-
-    // push optionalValues to chooseFields Array
-    for (let key in optionalValues) {
-      chooseFields.push({
-        title: key,
-        [key]: optionalValues[key],
-      });
-    }
-
-    // otherImages - deletedImageList = finalyOtherImages
-    const finalyOtherImages =
-      otherImages?.filter((image) => !deletedImageList.includes(image)) || [];
-
-    updateProduct({
-      id,
-      title,
-      postType: isPreSale ? 3 : postType,
-      price,
-      discount: discount ? discount : 0,
-      image: values.image.length ? generalImageLink : image,
-      otherImages: [...finalyOtherImages, ...otherImageLinks],
-      category,
-      description,
-      isPreSale,
-      isAvailable,
-      chooseFields,
-    });
   }
 
   // error handler
@@ -146,13 +142,104 @@ function EditProductModal({ onClose, isOpenEditModal }) {
     }
   }
 
+  function adjustInventory(variantId) {
+    const draft = inventoryDrafts[variantId] ?? {};
+    const delta = Number(draft.delta);
+    if (
+      !Number.isInteger(delta) ||
+      delta === 0 ||
+      draft.reason?.trim().length < 3 ||
+      !draft.reason?.trim()
+    ) {
+      toast.error("Enter an integer stock change and a reason.");
+      return;
+    }
+    updateInventory({ variantId, delta, reason: draft.reason.trim() });
+  }
+
   return (
-    <Modal open={isOpenEditModal} onClose={onClose}>
+    <Modal open={!!isOpenEditModal} onClose={onClose}>
       <div className="absolute left-1/2 top-1/2 h-[81dvh] w-[95%] max-w-4xl -translate-x-1/2 -translate-y-1/2 overflow-y-scroll bg-white p-3">
         <form
           onSubmit={handleSubmit(editProductHandler, editProductErrorHandler)}
           className="grid grid-cols-1 gap-5 rounded-lg bg-white p-3 capitalize will-change-contents xs:grid-cols-2"
         >
+          <>
+            <section className="rounded border p-3 xs:col-span-2">
+              <h3 className="mb-2 font-semibold">Inventory</h3>
+              <div className="grid gap-2">
+                {(product.variants ?? []).map((variant) => (
+                  <div
+                    key={variant.id}
+                    className="flex flex-wrap items-center gap-2 text-sm"
+                  >
+                    <span className="min-w-24">
+                      Variant {variant.id}: {variant.stock}
+                    </span>
+                    <label
+                      htmlFor={`inventory-delta-${variant.id}`}
+                      className="sr-only"
+                    >
+                      Stock change for variant {variant.id}
+                    </label>
+                    <input
+                      id={`inventory-delta-${variant.id}`}
+                      className="w-24 rounded border p-1"
+                      type="number"
+                      step="1"
+                      placeholder="± stock"
+                      value={inventoryDrafts[variant.id]?.delta ?? ""}
+                      onChange={(event) =>
+                        setInventoryDrafts((drafts) => ({
+                          ...drafts,
+                          [variant.id]: {
+                            ...drafts[variant.id],
+                            delta: event.target.value,
+                          },
+                        }))
+                      }
+                    />
+                    <label
+                      htmlFor={`inventory-reason-${variant.id}`}
+                      className="sr-only"
+                    >
+                      Reason for variant {variant.id}
+                    </label>
+                    <input
+                      id={`inventory-reason-${variant.id}`}
+                      className="min-w-40 flex-1 rounded border p-1"
+                      placeholder="Reason"
+                      value={inventoryDrafts[variant.id]?.reason ?? ""}
+                      onChange={(event) =>
+                        setInventoryDrafts((drafts) => ({
+                          ...drafts,
+                          [variant.id]: {
+                            ...drafts[variant.id],
+                            reason: event.target.value,
+                          },
+                        }))
+                      }
+                    />
+                    <button
+                      type="button"
+                      className="rounded bg-slate-700 px-2 py-1 text-white"
+                      onClick={() => adjustInventory(variant.id)}
+                    >
+                      {isUpdatingInventory ? "saving" : "apply"}
+                    </button>
+                  </div>
+                ))}
+                {inventoryError && (
+                  <p className="text-sm text-red-600">
+                    Inventory update failed.
+                  </p>
+                )}
+                {inventoryUpdated && (
+                  <p className="text-sm text-green-600">Inventory updated.</p>
+                )}
+              </div>
+            </section>
+          </>
           <>
             {/* inputs */}
             <ProductsInputBox
@@ -195,7 +282,7 @@ function EditProductModal({ onClose, isOpenEditModal }) {
                 category
               </label>
               <select
-                defaultValue={category}
+                defaultValue={category?.id ?? category}
                 {...register("category", {
                   required: "category field is required",
                 })}
@@ -207,7 +294,7 @@ function EditProductModal({ onClose, isOpenEditModal }) {
                   <option
                     className="appearance-none"
                     key={category.id}
-                    value={category.path.toLowerCase().split("-").join(" ")}
+                    value={category.id}
                   >
                     {category.title}
                   </option>
@@ -219,7 +306,7 @@ function EditProductModal({ onClose, isOpenEditModal }) {
                 postType
               </label>
               <select
-                defaultValue={postType}
+                defaultValue={shippingLeadDays}
                 {...register("postType", {
                   required: "postType field is required",
                 })}
@@ -230,6 +317,11 @@ function EditProductModal({ onClose, isOpenEditModal }) {
                 <option value={1}>today</option>
                 <option value={2}>tomorrow</option>
                 <option value={3}>Three days from now</option>
+                {shippingLeadDays > 3 && (
+                  <option value={shippingLeadDays}>
+                    {shippingLeadDays} days
+                  </option>
+                )}
               </select>
             </div>
           </>
@@ -261,17 +353,7 @@ function EditProductModal({ onClose, isOpenEditModal }) {
                   className="absolute inset-0 cursor-default opacity-0"
                   type="file"
                   multiple
-                  {...register("otherImages", {
-                    validate: (files) => {
-                      if (
-                        files.length +
-                          (otherImages?.length || 0) -
-                          deletedImageList.length <
-                        4
-                      )
-                        return "You must select at least 4 images";
-                    },
-                  })}
+                  {...register("otherImages")}
                 />
               </div>
             </div>
@@ -282,18 +364,18 @@ function EditProductModal({ onClose, isOpenEditModal }) {
               <div className="flex basis-1/2 flex-wrap gap-2">
                 {otherImages?.map((image, index) => (
                   <div
-                    key={image}
-                    className={`relative h-14 w-14 ${deletedImageList.some((img) => img === image) ? "hidden" : "block"}`}
+                    key={image.id}
+                    className={`relative h-14 w-14 ${deletedImageList.includes(image.url) ? "hidden" : "block"}`}
                   >
                     <img
-                      src={image}
+                      src={image.url}
                       className="h-full w-full"
                       alt={`photo-${index}`}
                     />
                     <button
                       type="button"
                       onClick={() =>
-                        setDeletedImageList((list) => [...list, image])
+                        setDeletedImageList((list) => [...list, image.url])
                       }
                       className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-full bg-white/50 p-0.5"
                     >
@@ -339,59 +421,14 @@ function EditProductModal({ onClose, isOpenEditModal }) {
                   className="cursor-pointer font-semibold text-gray-900"
                   htmlFor="isAvailable"
                 >
-                  is Available
+                  Sales enabled
                 </label>
                 <input
-                  defaultChecked={isAvailable}
+                  defaultChecked={saleEnabled}
                   type="checkbox"
                   className="scale-125 cursor-pointer accent-violet-500"
                   {...register("isAvailable")}
                   id="isAvailable"
-                />
-              </div>
-              <div className="flex min-h-8 w-full basis-auto select-none items-center gap-2 rounded-md bg-gray-100 p-1">
-                <label
-                  className="cursor-pointer font-semibold text-gray-900"
-                  htmlFor="isDiffrentColors"
-                >
-                  Does it come in different colors?
-                </label>
-                <input
-                  type="checkbox"
-                  defaultChecked={getChooseValues("colors")}
-                  className="scale-125 cursor-pointer accent-violet-500"
-                  {...register("isDiffrentColors")}
-                  id="isDiffrentColors"
-                />
-              </div>
-              <div className="flex min-h-8 w-full basis-auto select-none items-center gap-2 rounded-md bg-gray-100 p-1">
-                <label
-                  className="cursor-pointer font-semibold text-gray-900"
-                  htmlFor="isDiffrentWarranty"
-                >
-                  Does your product come with a warranty?
-                </label>
-                <input
-                  type="checkbox"
-                  defaultChecked={getChooseValues("warranty")}
-                  className="scale-125 cursor-pointer accent-violet-500"
-                  {...register("isDiffrentWarranty")}
-                  id="isDiffrentWarranty"
-                />
-              </div>
-              <div className="flex min-h-8 w-full basis-auto select-none items-center gap-2 rounded-md bg-gray-100 p-1">
-                <label
-                  className="cursor-pointer font-semibold text-gray-900"
-                  htmlFor="isDiffrentSizes"
-                >
-                  Does your product come in different sizes?
-                </label>
-                <input
-                  type="checkbox"
-                  defaultChecked={getChooseValues("size")}
-                  className="scale-125 cursor-pointer accent-violet-500"
-                  {...register("isDiffrentSizes")}
-                  id="isDiffrentSizes"
                 />
               </div>
               <div className="flex min-h-8 w-full basis-auto select-none items-center gap-2 rounded-md bg-gray-100 p-1">
@@ -411,57 +448,54 @@ function EditProductModal({ onClose, isOpenEditModal }) {
               </div>
             </div>
 
-            {watch("isDiffrentColors") || getChooseValues("colors") ? (
-              <ProductsInputBox
-                title={"color"}
-                type="text"
-                defaultValue={getChooseValues("colors")}
-                register={register("colors", {
-                  required: "color field is required",
-                  pattern: {
-                    value: /^[a-zA-Z0-9, ]*$/,
-                    message:
-                      "The input can only contain letters, commas, spaces and numbers",
-                  },
-                })}
-              />
-            ) : (
-              ""
-            )}
-            {watch("isDiffrentWarranty") || getChooseValues("warranty") ? (
-              <ProductsInputBox
-                title={"warranty"}
-                type="text"
-                defaultValue={getChooseValues("warranty")}
-                register={register("guarantees", {
-                  required: "warranty field is required",
-                  pattern: {
-                    value: /^[a-zA-Z0-9, ]*$/,
-                    message:
-                      "The input can only contain letters, commas, spaces and numbers",
-                  },
-                })}
-              />
-            ) : (
-              ""
-            )}
-            {watch("isDiffrentSizes") || getChooseValues("size") ? (
-              <ProductsInputBox
-                title={"size"}
-                type="text"
-                defaultValue={getChooseValues("size")}
-                register={register("sizes", {
-                  required: "size field is equired",
-                  pattern: {
-                    value: /^[a-zA-Z0-9, ]*$/,
-                    message:
-                      "The input can only contain letters, commas, spaces and numbers",
-                  },
-                })}
-              />
-            ) : (
-              ""
-            )}
+            <div className="space-y-3 xs:col-span-2">
+              <h3 className="font-semibold">Product options</h3>
+              <p className="text-sm text-neutral-500">
+                Options can only change before inventory or cart/order usage.
+                Leave them unchanged for existing variants.
+              </p>
+              {optionGroups.map((field, index) => (
+                <div
+                  key={field.id}
+                  className="grid grid-cols-1 gap-2 xs:grid-cols-2"
+                >
+                  <ProductsInputBox
+                    title={`Option ${index + 1} name`}
+                    type="text"
+                    register={register(`optionGroups.${index}.name`, {
+                      required: "Enter an option name.",
+                      pattern: {
+                        value: /^[a-z][a-z0-9_]*$/,
+                        message:
+                          "Use lowercase letters, numbers and underscores.",
+                      },
+                    })}
+                  />
+                  <ProductsInputBox
+                    title={`Option ${index + 1} values`}
+                    type="text"
+                    register={register(`optionGroups.${index}.values`, {
+                      required: "Enter comma-separated values.",
+                    })}
+                  />
+                  <button
+                    type="button"
+                    className="text-sm text-red-600"
+                    onClick={() => remove(index)}
+                  >
+                    Remove option
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                disabled={optionGroups.length >= 6}
+                className="rounded border px-3 py-2"
+                onClick={() => append({ name: "", values: "" })}
+              >
+                Add option
+              </button>
+            </div>
           </>
           <>
             {/* buttons */}
@@ -469,6 +503,7 @@ function EditProductModal({ onClose, isOpenEditModal }) {
               <button
                 className="basis-1/2 rounded-lg bg-violet-500 py-2 uppercase text-white xs:basis-1/4"
                 type="submit"
+                disabled={isSubmitting}
               >
                 submit
               </button>

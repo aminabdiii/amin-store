@@ -1,3 +1,4 @@
+import QueryError from "../../../ui/QueryError";
 import { Skeleton } from "@mui/material";
 import UserPanelContainer from "../UserPanelContainer";
 import { useAllPurchases } from "./useAllPurchases";
@@ -10,12 +11,21 @@ import useInfiniteScroll from "../../../hooks/useInfiniteScroll";
 const SKELETON_NUMBER = 4;
 
 function AdminPanelAllPurchases() {
-  const { pages, isLoading, fetchNextPage, isFetchingNextPage, hasNextPage } =
-    useAllPurchases();
+  const {
+    error,
+    refetch,
+    pages,
+    isLoading,
+    fetchNextPage,
+    isFetchingNextPage,
+    hasNextPage,
+  } = useAllPurchases();
   const { deliveryPurchase } = useDeliveryPurchase();
   const { ref, inView } = useInView();
 
   useInfiniteScroll({ fetchNextPage, inView });
+
+  if (error) return <QueryError onRetry={refetch} />;
 
   if (isLoading) {
     return (

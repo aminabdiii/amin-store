@@ -86,9 +86,7 @@ describe("product route consumers", () => {
       ).toBeGreaterThan(1),
     );
     await act(async () => screen.getByText("View").click());
-    await waitFor(() =>
-      expect(api.view).toHaveBeenCalledWith({ view: 4, id: "2" }),
-    );
+    await waitFor(() => expect(api.view).toHaveBeenCalledWith({ id: "2" }));
     expect(api.product).toHaveBeenCalledWith({ id: "1" });
     expect(api.product).toHaveBeenCalledWith({ id: "2" });
   });

@@ -1,3 +1,4 @@
+import QueryError from "../../../ui/QueryError";
 import Order from "./Order";
 import Empty from "../../../ui/Empty";
 import UserPanelContainer from "../UserPanelContainer";
@@ -12,6 +13,8 @@ const SKELETON_NUMBER = 4;
 
 function Purchases() {
   const {
+    error,
+    refetch,
     purchasePages,
     isLoading,
     fetchNextPage,
@@ -21,6 +24,8 @@ function Purchases() {
   const { ref, inView } = useInView();
 
   useInfiniteScroll({ fetchNextPage, inView });
+
+  if (error) return <QueryError onRetry={refetch} />;
 
   if (isLoading) {
     return (

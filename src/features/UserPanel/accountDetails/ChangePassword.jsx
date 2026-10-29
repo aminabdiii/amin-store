@@ -10,11 +10,15 @@ function ChangePassword() {
   const { handleSubmit, register, watch, reset } = useForm();
   const { updatePassword, isUpdatingUserPassword } = useUpdateUserPassword();
 
-  function handleChangePassword({ password }) {
-    updatePassword({ password });
-    reset();
+  function handleChangePassword({ currentPassword, password }) {
+    updatePassword({ currentPassword, password }, { onSuccess: () => reset() });
   }
-  function handleChangePasswordError({ password, confirmPassword }) {
+  function handleChangePasswordError({
+    currentPassword,
+    password,
+    confirmPassword,
+  }) {
+    if (currentPassword) toast.error(currentPassword.message);
     if (password) toast.error(password.message);
     if (confirmPassword) toast.error(confirmPassword.message);
   }
@@ -28,19 +32,33 @@ function ChangePassword() {
       >
         <InputsContainer>
           <InputBox
+            type="password"
+            title="Current Password"
+            id="current-password"
+            register={register("currentPassword", {
+              required: "Enter your current password.",
+            })}
+          />
+          <InputBox
+            type="password"
             title="Password"
             id="Password"
             register={{
               ...register("password", {
                 required: "password field is required",
-                pattern: {
-                  value: /^[A-Za-z0-9@]{8,}$$/,
-                  message: "please enter a valid password!",
+                minLength: {
+                  value: 12,
+                  message: "Use at least 12 characters.",
+                },
+                maxLength: {
+                  value: 128,
+                  message: "Use at most 128 characters.",
                 },
               }),
             }}
           />
           <InputBox
+            type="password"
             title="Confirm Password"
             id="confirm-password"
             register={{
@@ -56,6 +74,7 @@ function ChangePassword() {
         <div className="text-center xs:text-start">
           <button
             type="submit"
+            disabled={isUpdatingUserPassword}
             className="w-24 rounded-xl bg-violet-500 p-3 text-center font-medium uppercase text-white"
           >
             {isUpdatingUserPassword ? (

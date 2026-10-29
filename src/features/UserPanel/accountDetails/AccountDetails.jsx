@@ -1,7 +1,5 @@
 import { HiOutlineShoppingBag } from "react-icons/hi";
 import { HiCalendarDays } from "react-icons/hi2";
-import { supabaseUrl } from "../../../../supabase";
-import { useEffect } from "react";
 import { useUploadAvatar } from "./useUploadAvatar";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -17,7 +15,6 @@ import InputsContainer from "./InputsContainer";
 import ChangePassword from "./ChangePassword";
 import HeadLine from "./HeadLine";
 import UploadImageSection from "./UploadImageSection";
-import { useUpdateUserAvatarFromComment } from "../../detailsProduct/useUpdateUserAvatarFromComment";
 import UserPanelContainer from "../UserPanelContainer";
 
 function AccountDetails({ user, cartItemsLength }) {
@@ -25,39 +22,26 @@ function AccountDetails({ user, cartItemsLength }) {
   const { avatarUploader, isUploading } = useUploadAvatar();
   const { updateUser, isUpdatingUser } = useUpdateUser();
   const { register, handleSubmit } = useForm();
-  const { updateUserCommentsAvatar } = useUpdateUserAvatarFromComment();
 
   const {
-    user_metadata: {
-      email,
-      fullName: userFullName,
-      userName,
-      avatar: avatarUrlPath,
-    },
+    email,
+    fullName: userFullName,
+    username: userName,
+    avatar: currentAvatar,
   } = user;
-  const createdAt = new Date(user.created_at).toLocaleDateString();
-
-  const avatarName =
-    user.id.split("-").slice(0, 2).join("") +
-    userName +
-    Math.floor(Math.random() * 1000000);
-
-  const imageUrl = `${supabaseUrl}/storage/v1/object/public/usersProfile/${avatarName}`;
-
-  // update after than update user information
-  useEffect(() => {
-    queryClient.invalidateQueries({
-      queryKey: ["user"],
-    });
-  }, [imageUrl, queryClient]);
-
-  function handleUpdateUser({ avatar, fullName }) {
-    if (avatar[0]) {
-      avatarUploader({ name: avatarName, file: avatar[0] });
-      updateUser({ avatar: imageUrl, fullName });
-      updateUserCommentsAvatar({ useravatar: imageUrl, userId: user?.id });
-    } else {
-      updateUser({ avatar: avatarUrlPath ? avatarUrlPath : "", fullName });
+  const avatarUrlPath = currentAvatar?.url;
+  const createdAt = new Date(user.createdAt).toLocaleDateString();
+  async function handleUpdateUser({ avatar, fullName }) {
+    try {
+      if (avatar?.[0]) await avatarUploader({ file: avatar[0] });
+      await updateUser({ fullName });
+    } catch {
+      /* Mutation hooks display request errors. */
+    } finally {
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+      queryClient.invalidateQueries({
+        predicate: (query) => String(query.queryKey[0]).startsWith("comments"),
+      });
     }
   }
   function handleUpdateUserError(errors) {
@@ -101,9 +85,9 @@ function AccountDetails({ user, cartItemsLength }) {
             register={{
               ...register("fullName", {
                 required: "full name field is required",
-                pattern: {
-                  value: /^[a-zA-Z\s]+$/,
-                  message: "Only english letters are allowed",
+                maxLength: {
+                  value: 200,
+                  message: "Use at most 200 characters.",
                 },
               }),
             }}

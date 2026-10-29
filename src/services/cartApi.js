@@ -1,99 +1,27 @@
-import { supabase } from "../../supabase";
-
-export async function getUserCartItems({ userId }) {
-  const { data, error } = await supabase
-    .from("carts")
-    .select("cart_items")
-    .eq("user_id", userId)
-    .single();
-
-  if (error) throw new Error(error);
-
-  return data;
+import { request } from "./apiClient";
+export function getUserCartItems() {
+  return request("/cart");
 }
-
-export async function getCartItemById({ productId, userId }) {
-  const cartProductsData = await getUserCartItems({ userId });
-
-  const productData = cartProductsData.find(
-    (product) => product.id === productId,
+export async function getCartItemById({ variantId }) {
+  return (await getUserCartItems()).cartItems.find(
+    (item) => item.variantId === variantId,
   );
-
-  return productData;
 }
-
-export async function addItemToCartApi({ product, userId }) {
-  const cartProductsData = await getUserCartItems({ userId });
-
-  const newProduct = { ...product, count: 1 };
-
-  const newCartsUpdate = [...cartProductsData.cart_items, newProduct];
-
-  const { error: updatingError, data } = await supabase
-    .from("carts")
-    .update({
-      cart_items: newCartsUpdate,
-    })
-    .eq("user_id", userId);
-
-  if (updatingError) throw new Error(updatingError);
-
-  return data;
+export function addItemToCartApi({ variantId, quantity = 1 }) {
+  return request("/cart/items", {
+    method: "POST",
+    body: { variantId, quantity },
+  });
 }
-
-export async function removeItemToCartApi({ productId, userId }) {
-  const cartProductsData = await getUserCartItems({ userId });
-
-  const newCartUpdate = cartProductsData.cart_items.filter(
-    (cart) => cart.id !== productId,
-  );
-
-  const { error: updatingError, data } = await supabase
-    .from("carts")
-    .update({
-      cart_items: newCartUpdate,
-    })
-    .eq("user_id", userId);
-
-  if (updatingError) throw new Error(updatingError);
-
-  return data;
+export function removeItemToCartApi({ variantId }) {
+  return request(`/cart/items/${variantId}`, { method: "DELETE" });
 }
-
-export async function updateProductCountFromCart({ productId, userId, count }) {
-  const cartProductsData = await getUserCartItems({ userId });
-
-  const filteringProduct = cartProductsData.cart_items.filter(
-    (cart) => cart.id !== productId,
-  );
-  const findingProduct = cartProductsData.cart_items.find(
-    (cart) => cart.id === productId,
-  );
-  const update = { ...findingProduct, count };
-
-  const newCartUpdate = [...filteringProduct, update];
-
-  const { data, error } = await supabase
-    .from("carts")
-    .update({
-      cart_items: newCartUpdate,
-    })
-    .eq("user_id", userId);
-
-  if (error) throw new Error(error);
-
-  return data;
+export function updateProductCountFromCart({ variantId, quantity }) {
+  return request(`/cart/items/${variantId}`, {
+    method: "PATCH",
+    body: { quantity },
+  });
 }
-
-export async function clearUserCart({ userId }) {
-  const { error: updatingError, data } = await supabase
-    .from("carts")
-    .update({
-      cart_items: [],
-    })
-    .eq("user_id", userId);
-
-  if (updatingError) throw new Error(updatingError);
-
-  return data;
+export function clearUserCart() {
+  return request("/cart", { method: "DELETE" });
 }

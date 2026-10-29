@@ -1,95 +1,121 @@
 import { productPath } from "../../../routing/paths";
 import { CheckCircle, Close, Timer } from "@mui/icons-material";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import { formatMoney } from "../../../utils/money";
+import { nextOrderStatuses } from "../../../utils/orderStatus";
 import Swal from "sweetalert2";
-
 function Order({ purchaseItem, type = "user", deliveryPurchase }) {
-  const { isDelivered, products, totalPrice, delivery_date, created_at, id } =
-    purchaseItem;
-  const registredAt = created_at.slice(0, 10).split("-").reverse().join("/");
-
-  function handleDelivery() {
-    Swal.fire({
-      title: "are you sure?",
-      icon: "warning",
-      showDenyButton: true,
-      confirmButtonText: "yes",
-    }).then((result) => {
-      if (result.isConfirmed) deliveryPurchase({ id });
+  const {
+    status,
+    items,
+    total,
+    deliveryDate,
+    createdAt,
+    id,
+    currency,
+    paymentStatus,
+  } = purchaseItem;
+  const [pending, setPending] = useState(false);
+  async function changeStatus(nextStatus) {
+    const result = await Swal.fire({
+      title: `Change order status to ${nextStatus.toLowerCase()}?`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Update status",
     });
+    if (!result.isConfirmed) return;
+    setPending(true);
+    deliveryPurchase(
+      { id, status: nextStatus },
+      { onSettled: () => setPending(false) },
+    );
   }
-
   return (
     <section className="flex w-full flex-col rounded-2xl bg-white">
       <div className="flex flex-col gap-5 border-b p-[18px] pb-5">
-        <div
-          className={`flex items-center justify-between gap-1 ${isDelivered ? "text-green-500" : "text-yellow-400"}`}
-        >
-          <div className="flex items-center gap-1">
-            {isDelivered ? <CheckCircle color="inherit" /> : <Timer />}
-            <h4 className="font-semibold text-black">
-              {isDelivered ? "delivered" : "waiting"}
-            </h4>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div
+            className={`flex items-center gap-1 ${status === "DELIVERED" ? "text-green-500" : "text-yellow-600"}`}
+          >
+            {status === "DELIVERED" ? <CheckCircle /> : <Timer />}
+            <h4 className="font-semibold text-black">{status.toLowerCase()}</h4>
           </div>
           {type === "admin" && (
-            <button
-              onClick={handleDelivery}
-              disabled={isDelivered}
-              className={`rounded-xl border p-1 text-sm font-semibold text-white ${isDelivered ? "bg-gray-400" : "bg-green-400"}`}
-            >
-              {isDelivered ? "is Complete" : "Complete"}
-            </button>
+            <div className="flex gap-2">
+              {nextOrderStatuses[status]?.map((nextStatus) => (
+                <button
+                  key={nextStatus}
+                  disabled={pending}
+                  onClick={() => changeStatus(nextStatus)}
+                  className="rounded-xl bg-violet-500 p-2 text-sm font-semibold text-white disabled:bg-gray-400"
+                >
+                  {nextStatus.toLowerCase()}
+                </button>
+              ))}
+            </div>
           )}
         </div>
-        <div className="space-y-5 text-sm">
-          <div className="space-x-1 font-medium text-neutral-500">
-            <span>Delivery Date</span>
-            <span className="font-semibold text-black">
-              {delivery_date.split("-").reverse().join("/")}
-            </span>
+        <div className="space-y-3 text-sm text-neutral-500">
+          <p>
+            Delivery date:{" "}
+            <strong className="text-black">
+              {deliveryDate ? deliveryDate.slice(0, 10) : "Not available"}
+            </strong>
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <p>
+              Total price:{" "}
+              <strong className="text-black">
+                {formatMoney(total)} {currency}
+              </strong>
+            </p>
+            <p>Registered: {createdAt.slice(0, 10)}</p>
+            <p>Order: {id}</p>
           </div>
-          <div className="flex flex-col gap-3 xs:flex-row">
-            <div className="space-x-1 font-medium">
-              <span className="text-[12px] text-neutral-400">total price:</span>
-              <span className="font-semibold">{totalPrice.toFixed(2)}</span>
-            </div>
-            <div className="space-x-1 font-medium">
-              <span className="text-[12px] text-neutral-400">
-                Date of registration:
-              </span>
-              <span className="font-semibold">{registredAt}</span>
-            </div>
-            <div className="space-x-1 font-medium">
-              <span className="text-[12px] text-neutral-400">order:</span>
-              <span className="font-semibold">{id}</span>
-            </div>
-          </div>
+          <p>
+            {paymentStatus === "LEGACY_UNKNOWN"
+              ? "Historical payment status unavailable"
+              : "Payment not collected"}
+          </p>
         </div>
       </div>
       <div className="grid grid-cols-2 place-items-center gap-3 divide-x-2 py-2 xxs:grid-cols-3 sm:grid-cols-4 850:grid-cols-5 lg:grid-cols-6">
-        {products.map((product) => {
-          return (
-            <Link
-              to={productPath(product.id)}
-              key={product.id}
-              title={product.title}
-              className="relative flex w-full justify-center"
-            >
+        {items.map((item) => {
+          const content = (
+            <>
               <img
                 className="w-16 vxs:w-20"
-                src={product.image}
-                alt={product.title}
+                src={item.imageUrl || "/no-image.webp"}
+                alt={item.title}
               />
-              <span className="absolute left-2 top-0 flex h-6 w-6 items-center justify-center rounded-full bg-violet-500 text-xs font-medium text-white sm:h-7 sm:w-7">
-                {product.count}
-                <Close fontSize="5px" />
+              <span className="absolute left-2 top-0 flex h-6 w-6 items-center justify-center rounded-full bg-violet-500 text-xs font-medium text-white">
+                {item.quantity}
+                <Close fontSize="inherit" />
               </span>
+            </>
+          );
+          return item.productId ? (
+            <Link
+              to={productPath(item.productId)}
+              key={item.id}
+              title={item.title}
+              className="relative flex w-full justify-center"
+            >
+              {content}
             </Link>
+          ) : (
+            <div
+              key={item.id}
+              title={item.title}
+              className="relative flex w-full justify-center"
+            >
+              {content}
+            </div>
           );
         })}
       </div>
     </section>
   );
 }
-
 export default Order;

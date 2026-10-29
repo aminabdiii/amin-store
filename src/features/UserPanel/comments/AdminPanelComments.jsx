@@ -1,3 +1,4 @@
+import QueryError from "../../../ui/QueryError";
 import UserPanelContainer from "../UserPanelContainer";
 import { useAllComments } from "./useAllComments";
 import AdminPanelCommentBox from "./AdminPanelCommentBox";
@@ -10,6 +11,8 @@ const SKELETON_COUNT = 9;
 
 function AdminPanelComments() {
   const {
+    error,
+    refetch,
     commentPage,
     isLoading,
     fetchNextPage,
@@ -19,6 +22,8 @@ function AdminPanelComments() {
   const { ref, inView } = useInView();
 
   useInfiniteScroll({ fetchNextPage, inView });
+
+  if (error) return <QueryError onRetry={refetch} />;
 
   if (isLoading) {
     return (

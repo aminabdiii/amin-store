@@ -6,7 +6,8 @@ import { useState } from "react";
 import EditProductModal from "./EditProductModal";
 
 function AdminProductBox({ product }) {
-  const { id, image, title } = product;
+  const { id, title } = product;
+  const image = product.images?.[0]?.url || "/no-image.webp";
   const [isOpenEditModal, setIsOpenEditModal] = useState("");
   const onOpen = () => setIsOpenEditModal(id);
   const onClose = () => setIsOpenEditModal("");

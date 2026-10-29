@@ -3,7 +3,7 @@ import { updateUser as updateUserApi } from "../../../services/userApi";
 import { toast } from "react-toastify";
 
 export function useUpdateUser() {
-  const { mutate: updateUser, isPending: isUpdatingUser } = useMutation({
+  const { mutateAsync: updateUser, isPending: isUpdatingUser } = useMutation({
     mutationFn: updateUserApi,
 
     onSuccess: () => {

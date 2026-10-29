@@ -8,8 +8,11 @@ export function useLoginUser() {
     mutationFn: loginUserApi,
 
     onSuccess: async (data) => {
-      if (data.session && data.user) {
-        await queryClient.cancelQueries({ queryKey: ["user"] });
+      if (data.accessToken && data.user) {
+        await queryClient.cancelQueries();
+        queryClient.removeQueries({
+          predicate: (query) => query.queryKey[0] !== "user",
+        });
         queryClient.setQueryData(["user"], data.user);
         queryClient.invalidateQueries({ queryKey: ["userRole"] });
         queryClient.invalidateQueries({ queryKey: ["cart"] });

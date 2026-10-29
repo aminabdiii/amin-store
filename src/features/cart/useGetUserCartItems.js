@@ -11,7 +11,7 @@ export function useGetUserCartItems() {
     error,
     refetch,
   } = useQuery({
-    queryKey: ["cart"],
+    queryKey: ["cart", user?.id],
     enabled: !!user?.id,
     queryFn: () => getUserCartItems({ userId: user.id }),
   });

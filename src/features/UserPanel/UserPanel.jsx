@@ -82,9 +82,9 @@ function UserPanel() {
 
   if (roleError) return <QueryError onRetry={refetchRole} />;
 
-  const isAdmin = userRole?.role === "admin";
+  const isAdmin = userRole?.role === "ADMIN";
 
-  const cartItemsLength = cartProducts?.cart_items?.length;
+  const cartItemsLength = cartProducts?.cartItems?.length;
 
   function logoutHandler(event) {
     event.preventDefault();

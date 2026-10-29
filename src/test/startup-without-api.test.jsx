@@ -6,9 +6,8 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-it("starts the real public app without Supabase keys", async () => {
-  vi.stubEnv("VITE_SUPABASE_API_KEY", "");
-  vi.stubEnv("VITE_SUPABASE_SERVICE_ROLE_KEY", "");
+it("starts the real public app without API configuration", async () => {
+  vi.stubEnv("VITE_API_BASE_URL", "");
   vi.spyOn(window, "scrollTo").mockImplementation(() => {});
   window.history.replaceState(null, "", "/home");
   const { default: App } = await import("../App");

@@ -10,10 +10,10 @@ function BreadCrumbs({ title, category }) {
     </Link>,
     <Link
       key="2"
-      to={categoryPath(category)}
+      to={categoryPath(category?.slug ?? category)}
       className="underline-offset-2 hover:underline"
     >
-      {category}
+      {category?.title ?? category}
     </Link>,
     title && <span key="3">{title}</span>,
   ];

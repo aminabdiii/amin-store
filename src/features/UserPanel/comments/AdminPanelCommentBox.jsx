@@ -6,8 +6,10 @@ import { useConfirmUserComment } from "./useConfirmUserComment";
 import { useDeleteComment } from "./useDeleteComment";
 
 function AdminPanelCommentBox({
-  comment: { useravatar, userName, productId, isConfirm, content, id },
+  comment: { user, productId, approved: isConfirm, content, id },
 }) {
+  const userName = user?.fullName;
+  const useravatar = user?.avatarUrl;
   const { confirmComment } = useConfirmUserComment();
   const { deleteComment } = useDeleteComment();
 

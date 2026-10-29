@@ -1,13 +1,12 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { clearUserCart } from "../../services/cartApi";
-import { useGetUser } from "../../hooks/useGetUser";
-
+import { toast } from "react-toastify";
 export function useClearUserCart() {
-  const { user } = useGetUser();
-
-  const { mutate: clearCart } = useMutation({
-    mutationFn: () => clearUserCart({ userId: user?.id }),
+  const client = useQueryClient();
+  const { mutate: clearCart, isPending } = useMutation({
+    mutationFn: clearUserCart,
+    onSuccess: () => client.invalidateQueries({ queryKey: ["cart"] }),
+    onError: (error) => toast.error(error.message),
   });
-
-  return { clearCart };
+  return { clearCart, isPending };
 }

@@ -1,5 +1,6 @@
 function InputBox({
   title,
+  type = "text",
   defaultValue,
   isDisabled = false,
   id,
@@ -12,7 +13,7 @@ function InputBox({
         {title}
       </label>
       <input
-        type="text"
+        type={type}
         id={id}
         defaultValue={defaultValue}
         className={`h-12 w-full rounded-xl px-3 text-sm outline-none ring-gray-300 focus:ring-1 sm:h-14 sm:text-base ${isDisabled ? "cursor-not-allowed bg-gray-200" : "bg-gray-100"}`}

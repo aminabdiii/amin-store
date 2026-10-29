@@ -11,7 +11,9 @@ import "swiper/css/thumbs";
 
 function ThumbSwiper({ product }) {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
-  const { discount, image, title, otherImages, isAvailable } = product;
+  const { discount, images = [], title, isAvailable } = product;
+  const image = images[0]?.url || "/no-image.webp";
+  const otherImages = images.slice(1).map((item) => item.url);
 
   return (
     <div

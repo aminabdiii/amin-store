@@ -1,3 +1,4 @@
+import QueryError from "../../../ui/QueryError";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import {
   ClassicEditor,
@@ -38,7 +39,12 @@ import ProductsInputBox from "../products/ProductsInputBox";
 import EditArticleModal from "./EditArticleModal";
 
 function AdminArticlesPage() {
-  const { register, handleSubmit, reset, watch } = useForm();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { isSubmitting },
+  } = useForm();
 
   const [content, setContent] = useState("");
   const [editArticleId, setEditArticleId] = useState("");
@@ -46,34 +52,31 @@ function AdminArticlesPage() {
   const { uploadProductImage } = useUploadProductImages();
   const { insertNewArticle } = useInsertNewArticle();
 
-  const { articles, isLoading } = useArticles();
+  const { articles, error, refetch, isLoading } = useArticles();
 
-  const title = watch("title");
-  const newArticleImageUrl = `https://ddjggonagtvxnthvjxtr.supabase.co/storage/v1/object/public/articles/${title}`;
-
-  function submitNewArticleHandler({ image, title }) {
-    if (!content) {
-      toast.error("content field is required");
-      return;
-    }
-    uploadProductImage({
-      path: "articles",
-      fileName: title,
-      fileBody: image[0],
-    });
-    insertNewArticle(
-      {
-        content,
-        image: newArticleImageUrl,
-        title,
-      },
-      {
-        onSuccess: () => {
-          reset();
-          setContent("");
+  async function submitNewArticleHandler({ image, title }) {
+    try {
+      if (!content) {
+        toast.error("content field is required");
+        return;
+      }
+      const uploaded = await uploadProductImage({ fileBody: image[0] });
+      await insertNewArticle(
+        {
+          content,
+          imageId: uploaded.id,
+          title,
         },
-      },
-    );
+        {
+          onSuccess: () => {
+            reset();
+            setContent("");
+          },
+        },
+      );
+    } catch (error) {
+      toast.error(error.message);
+    }
   }
   function submitArticleErrorHandler(errors) {
     if (!content) {
@@ -87,6 +90,8 @@ function AdminArticlesPage() {
     reset();
     setContent("");
   }
+
+  if (error) return <QueryError onRetry={refetch} />;
 
   if (isLoading) {
     return (
@@ -208,6 +213,7 @@ function AdminArticlesPage() {
           <button
             className="basis-1/2 rounded-lg bg-violet-500 py-2 uppercase text-white xs:basis-1/4"
             type="submit"
+            disabled={isSubmitting}
           >
             submit
           </button>

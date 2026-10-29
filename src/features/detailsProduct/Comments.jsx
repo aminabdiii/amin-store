@@ -6,7 +6,7 @@ function Comments({ comments }) {
   return (
     <div className="flex flex-col gap-5 md:w-1/2">
       {comments.map((comment) => {
-        if (!comment.isConfirm) return null;
+        if (!comment.approved) return null;
         return (
           <div
             key={comment.id}
@@ -16,15 +16,15 @@ function Comments({ comments }) {
               <div className="flex items-center gap-3.5">
                 <div className="h-16 w-16 overflow-hidden rounded-full">
                   <img
-                    src={comment.useravatar || "user.jpeg"}
+                    src={comment.user?.avatarUrl || "user.jpeg"}
                     className="h-full w-full"
-                    alt={comment.userName}
+                    alt={comment.user?.fullName}
                   />
                 </div>
                 <div className="space-y-1">
-                  <h4 className="font-medium">{comment?.userName}</h4>
+                  <h4 className="font-medium">{comment.user?.fullName}</h4>
                   <p className="text-sm font-medium text-neutral-500">
-                    {comment.created_at
+                    {comment.createdAt
                       .slice(0, 10)
                       .split("-")
                       .reverse()
@@ -36,7 +36,7 @@ function Comments({ comments }) {
                 <span>
                   <Star />
                 </span>
-                <span>{comment.rate}</span>
+                <span>{comment.rating}</span>
               </div>
             </div>
             <div>

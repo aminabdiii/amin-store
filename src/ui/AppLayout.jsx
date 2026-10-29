@@ -14,7 +14,7 @@ function AppLayout() {
   const { cartProducts, isLoading: gettingCartItems } = useGetUserCartItems({
     userId: user?.id,
   });
-  const cartProductLength = cartProducts?.cart_items?.length;
+  const cartProductLength = cartProducts?.cartItems?.length;
 
   return (
     <>

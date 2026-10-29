@@ -4,15 +4,15 @@ import Swal from "sweetalert2";
 
 function UserBox({ user }) {
   const { deleteUser } = useDeleteUser();
-  const { created_at } = user;
+  const { createdAt } = user;
 
-  const { avatar, fullName, userName } = user.user_metadata;
+  const { avatar, fullName, username: userName, active } = user;
   function handleDeleteUser() {
     Swal.fire({
       icon: "warning",
-      title: `are you sure for delete "${fullName}" user?`,
+      title: `Disable the account for ${fullName}?`,
       showDenyButton: true,
-      confirmButtonText: "yes",
+      confirmButtonText: "Disable account",
     }).then((result) => {
       if (result.isConfirmed) deleteUser({ userId: user.id });
     });
@@ -25,7 +25,7 @@ function UserBox({ user }) {
           <div className="flex h-44 w-full items-center justify-center border-b">
             <img
               className="h-28 w-28 rounded-full sm:h-36 sm:w-36"
-              src={avatar || "/user.jpeg"}
+              src={avatar?.url || "/user.jpeg"}
               alt={fullName}
             />
           </div>
@@ -44,9 +44,9 @@ function UserBox({ user }) {
           <div className="flex items-center justify-center gap-1">
             <span
               className="text-center text-sm text-neutral-500"
-              title={`${created_at.slice(11, 19)} UTC`}
+              title={`${createdAt.slice(11, 19)} UTC`}
             >
-              {created_at.slice(0, 10).split("-").reverse().join("/")}
+              {createdAt.slice(0, 10).split("-").reverse().join("/")}
             </span>
           </div>
         </div>
@@ -55,9 +55,10 @@ function UserBox({ user }) {
         <div className="flex flex-col gap-2 p-2 text-sm">
           <button
             onClick={handleDeleteUser}
+            disabled={!active}
             className="flex items-center justify-center gap-1 rounded-[27px] border border-red-500 p-0.5 font-semibold uppercase text-red-500 transition-all duration-300 hover:bg-red-500 hover:text-white"
           >
-            <HiOutlineTrash /> delete
+            <HiOutlineTrash /> {active ? "Disable account" : "Disabled"}
           </button>
         </div>
       </>

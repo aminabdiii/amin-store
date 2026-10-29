@@ -7,12 +7,11 @@ export function useUpdateProductCountFromCart() {
   const { mutate: countUpdater, isPending } = useMutation({
     mutationFn: updateProductCountFromCart,
 
-    onSuccess: (cart) => {
+    onSuccess: () => {
       toast.success("success", { autoClose: 1000 });
       queryClient.invalidateQueries({
         queryKey: ["cart"],
       });
-      queryClient.setQueryData(["cart", cart]);
     },
     onError: (error) => {
       toast.error(error.message);

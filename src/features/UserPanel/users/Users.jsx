@@ -1,3 +1,4 @@
+import QueryError from "../../../ui/QueryError";
 import { Skeleton } from "@mui/material";
 import { useAllUser } from "../useAllUser";
 import { useGetUser } from "../../../hooks/useGetUser";
@@ -7,8 +8,10 @@ import UserBox from "./UserBox";
 import UserPanelContainer from "../UserPanelContainer";
 
 function Users() {
-  const { allUsers, isLoading: gettingUsers } = useAllUser();
+  const { allUsers, error, refetch, isLoading: gettingUsers } = useAllUser();
   const { user: signInUser, isLoading: gettingUser } = useGetUser();
+
+  if (error) return <QueryError onRetry={refetch} />;
 
   if (gettingUsers || gettingUser) {
     return (

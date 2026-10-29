@@ -8,7 +8,13 @@ import { useUploadProductImages } from "./useUploadProductImages";
 import { useInsertProduct } from "./useInertProduct";
 
 function CreateProductForm({ categories }) {
-  const { register, handleSubmit, watch, reset } = useForm();
+  const {
+    register,
+    handleSubmit,
+    watch,
+    reset,
+    formState: { isSubmitting },
+  } = useForm();
   const { uploadProductImage } = useUploadProductImages();
   const { insetNewProduct, isPending } = useInsertProduct();
   const [open, setOpen] = useState(false);
@@ -19,7 +25,7 @@ function CreateProductForm({ categories }) {
     setOpen(true);
   }
 
-  function createProductHandler(values) {
+  async function createProductHandler(values) {
     let chooseFields = [];
     const {
       title,
@@ -34,72 +40,64 @@ function CreateProductForm({ categories }) {
 
     const optionalValues = {};
 
-    const otherImageLinks = [...values.otherImages].map(
-      (file) =>
-        `https://ddjggonagtvxnthvjxtr.supabase.co/storage/v1/object/public/products/otherImages/${values.title}/${file.name}`,
-    );
+    try {
+      const uploadedImages = await Promise.all(
+        [values.image[0], ...values.otherImages].map((file) =>
+          uploadProductImage({ fileBody: file }),
+        ),
+      );
 
-    const generalImageLink = `https://ddjggonagtvxnthvjxtr.supabase.co/storage/v1/object/public/products/${values.image[0].name}`;
+      const colors = values?.colors?.split(",").map((item) => item.trim());
 
-    const colors = values?.colors?.split(",").map((item) => item.trim());
+      const guarantees = values?.guarantees
+        ?.split(",")
+        .map((item) => item.trim());
 
-    const guarantees = values?.guarantees
-      ?.split(",")
-      .map((item) => item.trim());
+      const sizes = values?.sizes?.split(",").map((item) => item.trim());
 
-    const sizes = values?.sizes?.split(",").map((item) => item.trim());
+      if (colors?.length && values.isDiffrentColors) {
+        optionalValues.colors = colors;
+      }
+      if (guarantees?.length && values.isDiffrentWarranty) {
+        optionalValues.warranty = guarantees;
+      }
+      if (sizes?.length && values.isDiffrentSizes) {
+        optionalValues.sizes = sizes;
+      }
 
-    if (colors?.length && values.isDiffrentColors) {
-      optionalValues.colors = colors;
-    }
-    if (guarantees?.length && values.isDiffrentWarranty) {
-      optionalValues.warranty = guarantees;
-    }
-    if (sizes?.length && values.isDiffrentSizes) {
-      optionalValues.sizes = sizes;
-    }
+      for (let key in optionalValues) {
+        chooseFields.push({
+          title: key,
+          [key]: optionalValues[key],
+        });
+      }
 
-    [...values.otherImages].map((file) => {
-      uploadProductImage({
-        path: `products/otherImages/${values.title}`,
-        fileName: file.name,
-        fileBody: file,
-      });
-    });
-    uploadProductImage({
-      path: "products",
-      fileName: values.image[0].name,
-      fileBody: values.image[0],
-    });
-
-    for (let key in optionalValues) {
-      chooseFields.push({
-        title: key,
-        [key]: optionalValues[key],
-      });
-    }
-
-    insetNewProduct(
-      {
-        title,
-        postType: isPreSale ? 3 : postType,
-        price,
-        discount: discount ? discount : 0,
-        image: generalImageLink,
-        otherImages: otherImageLinks,
-        category,
-        description,
-        isPreSale,
-        isAvailable,
-        chooseFields,
-      },
-      {
-        onSuccess() {
-          reset();
-          toast.success("success uploading");
+      await insetNewProduct(
+        {
+          title,
+          shippingLeadDays: Number(postType) || 1,
+          price: String(price),
+          discount: discount ? Number(discount) : 0,
+          categoryId: Number(category),
+          description,
+          isPreSale,
+          saleEnabled: isAvailable,
+          options: chooseFields.map((field) => ({
+            name: field.title,
+            values: field[field.title],
+          })),
+          imageIds: uploadedImages.map(({ id }) => id),
         },
-      },
-    );
+        {
+          onSuccess() {
+            reset();
+            toast.success("success uploading");
+          },
+        },
+      );
+    } catch (error) {
+      toast.error(error.message);
+    }
   }
 
   function createProductErrorHandler(errors) {
@@ -179,7 +177,7 @@ function CreateProductForm({ categories }) {
                   <option
                     className="appearance-none"
                     key={category.id}
-                    value={category.title}
+                    value={category.id}
                   >
                     {category.title}
                   </option>
@@ -234,11 +232,7 @@ function CreateProductForm({ categories }) {
                   className="absolute inset-0 cursor-default opacity-0"
                   type="file"
                   multiple
-                  {...register("otherImages", {
-                    required: "otherImages field is required",
-                    validate: (files) =>
-                      files.length >= 4 || "You must select at least 4 images",
-                  })}
+                  {...register("otherImages")}
                 />
               </div>
             </div>
@@ -277,7 +271,7 @@ function CreateProductForm({ categories }) {
                   className="cursor-pointer font-semibold text-gray-900"
                   htmlFor="isAvailable"
                 >
-                  is Available
+                  Sales enabled
                 </label>
                 <input
                   type="checkbox"
@@ -391,7 +385,7 @@ function CreateProductForm({ categories }) {
             {/* buttons */}
             <div className="flex justify-center gap-5 font-semibold xs:col-span-2">
               <button
-                disabled={isPending}
+                disabled={isPending || isSubmitting}
                 className="basis-1/2 rounded-lg bg-violet-500 py-2 uppercase text-white xs:basis-1/4"
                 type="submit"
               >

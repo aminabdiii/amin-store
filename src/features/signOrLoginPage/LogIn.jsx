@@ -75,11 +75,10 @@ function LogIn() {
                 className="w-full rounded border p-2 px-3 outline-none focus:ring-2 focus:ring-[#3f4bff]"
                 placeholder="Password"
                 {...register("password", {
-                  required: "password field is required",
-                  pattern: {
-                    value: /^[A-Za-z0-9@]{8,}$$/,
-                    message:
-                      "Minimum 8 characters, only English letters, numbers, and @ allowed.",
+                  required: "Password is required.",
+                  maxLength: {
+                    value: 128,
+                    message: "Use at most 128 characters.",
                   },
                 })}
               />

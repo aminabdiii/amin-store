@@ -46,7 +46,7 @@ function DetailsArticle() {
     >
       {error && <QueryError onRetry={refetch} />}
       <div className="mb-5">
-        <img className="mx-auto rounded-3xl" src={image} alt={title} />
+        <img className="mx-auto rounded-3xl" src={image?.url} alt={title} />
       </div>
       <h1 className="text-3xl font-semibold leading-10 md:text-4xl">{title}</h1>
 

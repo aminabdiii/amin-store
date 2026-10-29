@@ -76,8 +76,8 @@ function AboutUs() {
               My name is Amin, born on January 31, 2006. I’m 18 years old and
               have been involved in front-end development for about a year and a
               half now. I’ve gained hands-on experience with technologies such
-              as HTML, CSS, Tailwind CSS, JavaScript, React JS, MUI, Supabase,
-              React Query, React Router, and more...
+              as HTML, CSS, Tailwind CSS, JavaScript, React JS, MUI, React
+              Query, React Router, and more...
             </motion.p>
             <motion.p
               initial={{ x: "200%" }}

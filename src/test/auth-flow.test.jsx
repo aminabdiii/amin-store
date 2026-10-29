@@ -86,7 +86,7 @@ async function login() {
     target: { value: "person@example.com" },
   });
   fireEvent.change(screen.getByPlaceholderText("Password"), {
-    target: { value: "password123" },
+    target: { value: "password12345" },
   });
   fireEvent.submit(screen.getByPlaceholderText("Password").closest("form"));
 }
@@ -95,7 +95,7 @@ beforeEach(() => {
   api.getUser.mockResolvedValue(null);
   api.login.mockImplementation(async () => {
     api.getUser.mockResolvedValue({ id: "user-1" });
-    return { user: { id: "user-1" }, session: { access_token: "test" } };
+    return { user: { id: "user-1" }, accessToken: "test" };
   });
 });
 describe("authentication navigation", () => {
@@ -141,13 +141,13 @@ describe("authentication navigation", () => {
     ).toBeInTheDocument();
   });
   it.each([true, false])(
-    "returns after signup only when a session exists: %s",
+    "returns after signup only when an access token exists: %s",
     async (hasSession) => {
       api.signup.mockImplementation(async () => {
         if (hasSession) api.getUser.mockResolvedValue({ id: "new-user" });
         return {
           user: { id: "new-user" },
-          session: hasSession ? { access_token: "test" } : null,
+          accessToken: hasSession ? "test" : null,
         };
       });
       const client = open({
@@ -164,8 +164,8 @@ describe("authentication navigation", () => {
         ["fullName", "Test Person"],
         ["userName", "testperson"],
         ["Email address", "person@example.com"],
-        ["Password", "password123"],
-        ["confirm Password", "password123"],
+        ["Password", "password12345"],
+        ["confirm Password", "password12345"],
       ]) {
         fireEvent.change(await screen.findByPlaceholderText(placeholder), {
           target: { value },

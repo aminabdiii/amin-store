@@ -25,10 +25,7 @@ function CommentForm({ user, commentsLength }) {
       return;
     }
     insertComment({
-      userId: user.id,
-      useravatar: user.user_metadata.avatar,
-      userName: user.user_metadata.userName,
-      rate,
+      rating: Number(rate),
       content: comment,
     });
     reset();

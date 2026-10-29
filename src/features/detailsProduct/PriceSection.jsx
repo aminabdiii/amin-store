@@ -1,9 +1,8 @@
+import { formatMoney, discountedPrice } from "../../utils/money";
 import { FaDollarSign } from "react-icons/fa6";
 
 function PriceSection({ discount, price }) {
-  const finallyPrice = discount
-    ? Math.floor(price - (price * discount) / 100)
-    : price;
+  const finallyPrice = discountedPrice(price, discount);
 
   return (
     <div className="flex flex-col gap-1 md:gap-5">
@@ -12,11 +11,11 @@ function PriceSection({ discount, price }) {
           <span>
             <FaDollarSign className="text-green-400" />
           </span>
-          <span>{finallyPrice.toFixed(2)}</span>
+          <span>{formatMoney(finallyPrice)}</span>
         </div>
         {discount > 0 && (
           <div className="flex gap-2 text-sm font-semibold text-gray-400 line-through md:text-lg">
-            <span>{price.toFixed(2)}</span>
+            <span>{formatMoney(price)}</span>
           </div>
         )}
       </div>

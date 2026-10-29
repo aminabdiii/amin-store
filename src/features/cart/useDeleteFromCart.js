@@ -1,16 +1,13 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { removeItemToCartApi } from "../../services/cartApi";
 import Swal from "sweetalert2";
-import { useGetUser } from "../../hooks/useGetUser";
 
 export function useDeleteFromCart() {
   const queryClient = useQueryClient();
-  const { user } = useGetUser();
 
   const { mutate: removeFromCartById, isPending } = useMutation({
     mutationKey: ["cart"],
-    mutationFn: ({ productId }) =>
-      removeItemToCartApi({ userId: user?.id, productId }),
+    mutationFn: removeItemToCartApi,
 
     onSuccess: () => {
       queryClient.invalidateQueries({

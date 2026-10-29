@@ -93,14 +93,14 @@ describe("route access", () => {
     ).toBeInTheDocument();
   });
   it("redirects non-admin users to account details", async () => {
-    state.role = { role: "authenticated" };
+    state.role = { role: "CUSTOMER" };
     renderGuard(<AdminPanelSecurity>Admin only</AdminPanelSecurity>);
     expect(
       await screen.findByText(/\/userPanel\/accountDetails/),
     ).toBeInTheDocument();
   });
   it("allows an administrator", () => {
-    state.role = { role: "admin" };
+    state.role = { role: "ADMIN" };
     renderGuard(<AdminPanelSecurity>Admin only</AdminPanelSecurity>);
     expect(screen.getByText("Admin only")).toBeInTheDocument();
   });

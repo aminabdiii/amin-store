@@ -1,165 +1,69 @@
-import { supabase } from "../../supabase";
-
-export async function getLimitProducts({ limit }) {
-  const { data, error } = await supabase
-    .from("products")
-    .select("*")
-    .limit(limit)
-    .order("created_at", { ascending: false });
-  // .eq("isAvailable", true);
-
-  if (error) throw new Error(error);
-
-  return data;
-}
-
-export async function getDiscountProducts() {
-  const { data, error } = await supabase
-    .from("products")
-    .select("*")
-    .gt("discount", 0)
-    .limit(12);
-
-  if (error) throw new Error(error);
-
-  return data;
-}
-
-export async function getDetailProduct({ id }) {
-  const { data, error } = await supabase
-    .from("products")
-    .select("*")
-    .eq("id", id)
-    .maybeSingle();
-
-  if (error) throw error;
-
-  return data;
-}
-
-export async function getProductsByCategory({
+import { request, detail } from "./apiClient";
+function filters({
   category,
-  sort,
+  sort = "rate",
   presale,
   availableProducts,
   discountProducts,
   search,
-  pageParam,
-}) {
-  const pageSize = 9;
-  const query = supabase
-    .from("products")
-    .select(
-      "id, title, postType, price, discount, image, rate , isPreSale, isAvailable",
-    )
-    .range((pageParam - 1) * pageSize, pageParam * pageSize - 1);
-
-  if (sort === "most-view") query.order("view", { ascending: false });
-  else if (sort === "cheapest") query.order("price", { ascending: true });
-  else if (sort === "most-expensive")
-    query.order("price", { ascending: false });
-  else if (sort === "default") query.order("id", { ascending: false });
-  else if (sort === "fastest-shipping")
-    query.order("postType", { ascending: true });
-  else if (!sort) query.order("rate", { ascending: false });
-  else if (sort === "rate") query.order("rate", { ascending: false });
-  else if (sort === "newest") query.order("created_at", { ascending: false });
-
-  if (presale === "true") query.eq("isPreSale", true);
-  if (availableProducts === "true") query.eq("isAvailable", true);
-  if (discountProducts === "true") query.gt("discount", 0);
-
-  if (search) query.ilike("title", `%${search}%`);
-
-  const { data, error } = await query.eq(
-    "category",
-    category.split("-").join(" "),
-  );
-
-  if (error) throw new Error(error);
-
-  return data;
+  pageParam = 1,
+} = {}) {
+  return {
+    category,
+    sort,
+    preSale: presale,
+    available: availableProducts,
+    discounted: discountProducts,
+    search,
+    page: pageParam,
+    limit: 9,
+  };
 }
-
-export async function getAllProducts({
-  sort,
-  presale,
-  availableProducts,
-  discountProducts,
-  search,
-  pageParam,
-}) {
-  const pageSize = 9;
-  const query = supabase
-    .from("products")
-    .select(
-      "id, title, postType, price, discount, image, rate , isPreSale, isAvailable",
-    )
-    .range((pageParam - 1) * pageSize, pageParam * pageSize - 1);
-
-  if (sort === "most-view") query.order("view", { ascending: false });
-  else if (sort === "cheapest") query.order("price", { ascending: true });
-  else if (sort === "most-expensive")
-    query.order("price", { ascending: false });
-  else if (sort === "default") query.order("id", { ascending: false });
-  else if (sort === "fastest-shipping")
-    query.order("postType", { ascending: true });
-  else if (sort === "rate") query.order("rate", { ascending: false });
-  else if (!sort) query.order("rate", { ascending: false });
-  else if (sort === "newest") query.order("created_at", { ascending: false });
-
-  if (presale === "true") query.eq("isPreSale", true);
-  if (availableProducts === "true") query.eq("isAvailable", true);
-  if (discountProducts === "true") query.gt("discount", 0);
-
-  if (search) query.ilike("title", `%${search}%`);
-
-  const { data, error } = await query;
-
-  if (error) throw new Error(error);
-
-  return data;
+export async function getLimitProducts({ limit }) {
+  return (
+    await request("/products", {
+      auth: false,
+      query: { sort: "newest", limit },
+    })
+  ).data;
 }
-
-export async function updateProductView({ view, id }) {
-  const { data, error } = await supabase
-    .from("products")
-    .update({ view: view })
-    .eq("id", id)
-    .select();
-
-  if (error) throw new Error(error);
-
-  return data;
+export async function getDiscountProducts() {
+  return (
+    await request("/products", {
+      auth: false,
+      query: { discounted: true, limit: 12 },
+    })
+  ).data;
 }
-
-export async function insertNewProductApi({ ...values }) {
-  const { data, error } = await supabase.from("products").insert([values]);
-
-  if (error) throw new Error(error);
-
-  return data;
+export function getDetailProduct({ id }) {
+  return detail(`/products/${id}`);
 }
-export async function updateProductApi({ id, ...values }) {
-  const { data, error } = await supabase
-    .from("products")
-    .update(values)
-    .eq("id", id);
-
-  if (error) throw new Error(error);
-
-  return data;
+export function getProductsByCategory(values) {
+  return request("/products", { auth: false, query: filters(values) });
 }
-
-export async function getRelatedProducts({ category, expectProductId }) {
-  const { data, error } = await supabase
-    .from("products")
-    .select("*")
-    .eq("category", category)
-    .limit(4)
-    .neq("id", expectProductId);
-
-  if (error) throw new Error(error);
-
-  return data;
+export function getAllProducts(values) {
+  return request("/products", { auth: false, query: filters(values) });
+}
+export function getAdminProducts(values) {
+  return request("/admin/products", { query: filters(values) });
+}
+export function updateProductView({ id }) {
+  return request(`/products/${id}/views`, { method: "POST", auth: false });
+}
+export function insertNewProductApi(values) {
+  return request("/admin/products", { method: "POST", body: values });
+}
+export function updateProductApi({ id, ...values }) {
+  return request(`/admin/products/${id}`, { method: "PATCH", body: values });
+}
+export async function getRelatedProducts({ expectProductId }) {
+  return (
+    await request(`/products/${expectProductId}/related`, { auth: false })
+  ).data;
+}
+export function updateInventoryApi({ variantId, delta, reason }) {
+  return request(`/admin/variants/${variantId}/inventory`, {
+    method: "POST",
+    body: { delta, reason },
+  });
 }

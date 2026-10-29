@@ -1,5 +1,7 @@
+import QueryError from "../../../ui/QueryError";
 import { Skeleton } from "@mui/material";
-import { useAllProducts } from "../../products/useProducts";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { getAdminProducts } from "../../../services/productsApi";
 
 import UserPanelContainer from "../UserPanelContainer";
 import AdminProductBox from "./AdminProductBox";
@@ -13,18 +15,44 @@ import useInfiniteScroll from "../../../hooks/useInfiniteScroll";
 function AdminPanelProducts() {
   const { ref, inView } = useInView();
   const {
+    data,
+    error: productsError,
+    refetch: refetchProducts,
     isLoading: isGetttingProducts,
-    pages,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useAllProducts();
+  } = useInfiniteQuery({
+    queryKey: ["admin-products"],
+    queryFn: ({ pageParam = 1 }) => getAdminProducts({ pageParam }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) =>
+      lastPage.meta.page < lastPage.meta.totalPages
+        ? lastPage.meta.page + 1
+        : undefined,
+  });
+  const pages = data?.pages?.map((page) => page.data) ?? [];
 
   useInfiniteScroll({ fetchNextPage, inView });
 
-  const { categories, isLoading: isGettingCategories } = useCategories();
+  const {
+    categories,
+    error: categoriesError,
+    refetch: refetchCategories,
+    isLoading: isGettingCategories,
+  } = useCategories();
 
   const isLoading = isGetttingProducts || isGettingCategories;
+
+  if (productsError || categoriesError)
+    return (
+      <QueryError
+        onRetry={() => {
+          refetchProducts();
+          refetchCategories();
+        }}
+      />
+    );
 
   if (isLoading) {
     return (

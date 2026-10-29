@@ -1,12 +1,4 @@
-import { supabase } from "../../supabase";
-
-export async function getAllFeatures() {
-  const { data: features, error } = await supabase
-    .from("features")
-    .select("*")
-    .order("id");
-
-  if (error) throw new Error(error);
-
-  return features;
+import { allPages } from "./apiClient";
+export function getAllFeatures() {
+  return allPages("/features", { auth: false });
 }

@@ -9,12 +9,12 @@ function SubMenuItem({ subMenu }) {
   return (
     <li>
       <Link
-        to={categoryPath(subMenu.path)}
+        to={categoryPath(subMenu.slug)}
         className={`flex items-center gap-2 border-b border-r px-4 py-[18px] transition-colors hover:bg-gray-100`}
       >
-        <img src={subMenu.image} alt={subMenu.title} className="w-5" />
+        <img src={subMenu.image?.url} alt={subMenu.title} className="w-5" />
         {subMenu.title}
-        {selectedCategory === subMenu.path && (
+        {selectedCategory === subMenu.slug && (
           <HiOutlineBadgeCheck size={18} color="#663dff" />
         )}
       </Link>

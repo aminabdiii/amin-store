@@ -9,6 +9,7 @@ function ProductsInputBox({ title, type, register, defaultValue }) {
         id={title}
         name={title}
         type={type}
+        step={title === "price" ? "0.01" : undefined}
         defaultValue={defaultValue}
         placeholder={`Enter product ${title}`}
         onWheel={(event) => event.preventDefault()}

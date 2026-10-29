@@ -15,7 +15,7 @@ const state = vi.hoisted(() => ({
   error: null,
   refetch: vi.fn(),
   user: null,
-  role: { role: "authenticated" },
+  role: { role: "CUSTOMER" },
 }));
 vi.mock("../hooks/useCategories", () => ({ useCategories: () => state }));
 vi.mock("../hooks/useGetUser", () => ({
@@ -89,7 +89,7 @@ beforeEach(() => {
     isLoading: false,
     error: null,
     user: null,
-    role: { role: "authenticated" },
+    role: { role: "CUSTOMER" },
   });
   state.refetch.mockReset();
 });
@@ -169,7 +169,7 @@ describe("nested panel routes", () => {
   });
   it("opens an admin child for an administrator", async () => {
     state.user = { id: "u1" };
-    state.role = { role: "admin" };
+    state.role = { role: "ADMIN" };
     open("/userPanel/users");
     expect(await screen.findByText("Manage users")).toBeInTheDocument();
   });

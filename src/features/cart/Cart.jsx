@@ -1,37 +1,31 @@
-import QueryError from "../../ui/QueryError";
-import { productPath } from "../../routing/paths";
+import { Button, Skeleton } from "@mui/material";
+import { Navigate } from "react-router-dom";
 import {
   HiOutlineCreditCard,
   HiOutlineShoppingBag,
   HiTrash,
 } from "react-icons/hi2";
-import { toast } from "react-toastify";
-import { useGetUserCartItems } from "./useGetUserCartItems";
 import { FaDollarSign } from "react-icons/fa6";
-import { Button, Skeleton } from "@mui/material";
+import QueryError from "../../ui/QueryError";
+import { productPath } from "../../routing/paths";
 import { useGetUser } from "../../hooks/useGetUser";
+import { useGetUserCartItems } from "./useGetUserCartItems";
 import { useDeleteFromCart } from "./useDeleteFromCart";
-import { Navigate } from "react-router-dom";
 import { useInsertUserPurchases } from "./useInsertUserPurchases";
 import { useClearUserCart } from "./useClearUserCart";
-import { useQueryClient } from "@tanstack/react-query";
-
+import { checkoutKey } from "../../utils/checkout";
+import { formatMoney } from "../../utils/money";
 import TopBarTitle from "./TopBarTitle";
 import CounterSection from "../detailsProduct/CounterSection";
 import Image from "./Image";
 import ImageContainer from "./ImageContainer";
 import ProductContainer from "./ProductContainer";
 import PriceSection from "./PriceSection";
-import PickedFeaturesSection from "./PickedFeaturesSection";
 import ProductTitleLink from "./ProductTitleLink";
 import CartSection from "./CartSection";
-import Swal from "sweetalert2";
 import EmptyCart from "./EmptyCart";
-
-import _ from "lodash";
-
+import Swal from "sweetalert2";
 function Cart() {
-  const queryClient = useQueryClient();
   const {
     cartProducts,
     isLoading,
@@ -40,242 +34,148 @@ function Cart() {
   } = useGetUserCartItems();
   const {
     user,
-    isLoading: isGettingUser,
+    isLoading: gettingUser,
     error: userError,
     refetch: refetchUser,
   } = useGetUser();
-  const { removeFromCartById, isPending } = useDeleteFromCart();
-  const { insertPurchases } = useInsertUserPurchases();
-  const { clearCart } = useClearUserCart();
-
+  const { removeFromCartById, isPending: removing } = useDeleteFromCart();
+  const { insertPurchases, isPending: checkingOut } = useInsertUserPurchases();
+  const { clearCart, isPending: clearing } = useClearUserCart();
   if (userError) return <QueryError onRetry={refetchUser} />;
   if (cartError) return <QueryError onRetry={refetchCart} />;
-
-  if (isLoading || isGettingUser) {
+  if (isLoading || gettingUser)
     return (
-      <section className="mx-auto my-5 flex max-w-7xl flex-col gap-5 px-3 md:flex-row md:justify-between">
-        <div className="h-auto basis-full md:min-h-[80dvh] md:basis-2/3">
-          <Skeleton
-            variant="rounded"
-            height="100%"
-            width="100%"
-            className="!h-dvh !rounded-t-3xl md:h-auto"
-          />
-        </div>
-        <div className="sticky top-[100px] h-full basis-full md:basis-1/3 md:self-start">
-          <Skeleton variant="rounded" height={300} className="!rounded-t-3xl" />
-        </div>
+      <section className="mx-auto my-5 max-w-7xl p-3">
+        <Skeleton variant="rounded" height={400} />
       </section>
     );
-  }
-
-  if (!cartProducts && !isLoading && !isGettingUser) {
+  if (!user) return <Navigate to="/login" replace />;
+  if (!cartProducts) return <QueryError onRetry={refetchCart} />;
+  const { cartItems, total, requiresResolution, currency } = cartProducts;
+  // Ambiguous migrated carts may have no canonical rows; show their resolution action first.
+  if (requiresResolution)
+    return (
+      <section className="mx-auto my-5 max-w-7xl space-y-4 p-5">
+        <p role="alert">
+          Some saved cart options could not be matched. Clear this cart and
+          select your items again before ordering.
+        </p>
+        <Button
+          onClick={() => clearCart()}
+          disabled={clearing}
+          variant="contained"
+        >
+          Clear saved cart
+        </Button>
+      </section>
+    );
+  if (!cartItems.length) return <EmptyCart className="min-h-[35rem]" />;
+  function remove(variantId) {
     Swal.fire({
-      icon: "info",
-      title: "Please first log in or sign up to the website",
-    });
-    return <Navigate to="/sign-in" replace />;
-  }
-
-  const isEmptyCart = !cartProducts.cart_items.length;
-
-  if (isEmptyCart) return <EmptyCart className={"min-h-[35rem]"} />;
-
-  function removeClickHandler({ productId }) {
-    Swal.fire({
-      title: "Are you sure you want to remove this item from your cart?",
+      title: "Remove this item from your cart?",
       icon: "warning",
-      showDenyButton: true,
-      showConfirmButton: true,
-      confirmButtonText: "yes",
-    }).then((response) => {
-      if (response.isConfirmed)
-        removeFromCartById(
-          { productId, userId: user.id },
-          { onSuccess: () => toast.success("remove successfully") },
-        );
+      showCancelButton: true,
+      confirmButtonText: "Remove",
+    }).then((result) => {
+      if (result.isConfirmed) removeFromCartById({ variantId });
     });
   }
-  const totalPrice = _.reduce(
-    cartProducts.cart_items,
-    (acc, item) => acc + item.price * item.count,
-    0,
-  );
-
-  const isHaveDiscount = _.some(
-    cartProducts.cart_items,
-    (item) => item.discount,
-  );
-
-  const discountPrice = _.reduce(
-    cartProducts.cart_items,
-    (acc, item) =>
-      isHaveDiscount
-        ? acc + (item.price - (item.price * item.discount) / 100) * item.count
-        : totalPrice,
-    0,
-  );
-
-  const calcDiscountPercentage = isHaveDiscount
-    ? Math.floor(((totalPrice - discountPrice) / totalPrice) * 100)
-    : 0;
-
-  const cartItems = cartProducts.cart_items.sort((a, b) => b.price - a.price);
-
-  function completePurchasesHandler() {
-    let date = new Date();
-
-    const deliveryDate = _.reduce(
-      cartProducts.cart_items,
-      (acc, data, _, array) => acc + data.postType / array.length,
-      0,
-    );
-
-    date.setDate(date.getDate() + Math.floor(deliveryDate));
-
-    insertPurchases(
-      {
-        delivery_date: date,
-        products: cartProducts.cart_items,
-        userId: user.id,
-        totalPrice: discountPrice,
-      },
-      {
-        onSuccess() {
-          clearCart();
-          queryClient.setQueryData(["cart"], cartProducts);
-        },
-      },
-    );
-  }
-
+  const unavailable = cartItems.some((item) => !item.isAvailable);
   return (
     <section className="mx-auto my-5 flex max-w-7xl flex-col gap-5 px-3 md:flex-row md:justify-between">
-      <>
-        <CartSection>
-          <TopBarTitle
-            title="shopping card"
-            icon={<HiOutlineShoppingBag size={30} />}
-          />
-          <div className="flex min-h-[80dvh] flex-col gap-3 divide-y border">
-            {cartItems.map((item) => {
-              const {
-                title,
-                price,
-                size,
-                image,
-                discount,
-                colors,
-                warranty,
-                category,
-                id,
-                count,
-              } = item;
-
-              return (
-                <ProductContainer key={title}>
-                  <ImageContainer>
-                    <Image src={image} alt={title} path={productPath(id)} />
-                    <CounterSection
-                      cartProducts={cartProducts}
-                      productId={id}
-                      userId={user.id}
-                    />
-                  </ImageContainer>
-
-                  <div className="flex h-full flex-grow flex-col gap-3 pr-3">
-                    <ProductTitleLink title={title} path={productPath(id)} />
-                    <PriceSection
-                      count={count}
-                      price={price}
-                      discount={discount}
-                    />
-                    <PickedFeaturesSection
-                      category={category}
-                      color={colors}
-                      size={size}
-                      warranty={warranty}
-                    />
-
-                    <Button
-                      onClick={() => removeClickHandler({ productId: id })}
-                      disabled={isPending}
-                      size="small"
-                      variant="contained"
-                      color="error"
-                      className="!mt-2 !self-end !font-montserrat !text-[10px] 450:!text-base"
-                      startIcon={
-                        <HiTrash className="h-3 w-3 450:h-5 450:w-5" />
-                      }
-                    >
-                      Delete
-                    </Button>
-                  </div>
-                </ProductContainer>
-              );
-            })}
-          </div>
-        </CartSection>
-      </>
-      <>
-        <div className="sticky top-[100px] h-full basis-full md:basis-1/3 md:self-start">
-          <>
-            <TopBarTitle
-              title="Payment information"
-              icon={<HiOutlineCreditCard size={30} />}
-            />
-          </>
-          <div className="border px-3 py-5">
-            <>
-              <div className="flex flex-col gap-6 border-b pb-5">
-                <div className="flex items-center justify-between gap-2 text-gray-700">
-                  <h4 className="text-sm font-semibold capitalize">
-                    total price
-                  </h4>
-                  <span className="flex items-center gap-1 text-base font-semibold">
-                    {totalPrice.toFixed(2)}
-                    <FaDollarSign size={18} />
-                  </span>
+      <CartSection>
+        <TopBarTitle
+          title="shopping cart"
+          icon={<HiOutlineShoppingBag size={30} />}
+        />
+        <div className="flex min-h-[40vh] flex-col gap-3 divide-y border">
+          {cartItems.map((item) => (
+            <ProductContainer key={item.variantId}>
+              <ImageContainer>
+                <Image
+                  src={item.imageUrl || "/no-image.webp"}
+                  alt={item.title}
+                  path={productPath(item.productId)}
+                />
+                <CounterSection
+                  cartProducts={cartProducts}
+                  variantId={item.variantId}
+                />
+              </ImageContainer>
+              <div className="flex h-full flex-grow flex-col gap-3 pr-3">
+                <ProductTitleLink
+                  title={item.title}
+                  path={productPath(item.productId)}
+                />
+                <PriceSection
+                  quantity={item.quantity}
+                  price={item.price}
+                  netUnitPrice={item.netUnitPrice}
+                  discount={item.discount}
+                />
+                <div className="text-sm">
+                  {Object.entries(item.options).map(([name, value]) => (
+                    <p key={name}>
+                      {name}: <strong>{value}</strong>
+                    </p>
+                  ))}
                 </div>
-                <div className="flex items-center justify-between gap-2 text-red-500">
-                  <h4 className="text-sm font-semibold capitalize">
-                    discounted price ({calcDiscountPercentage}%)
-                  </h4>
-                  <span className="flex items-center gap-1 text-base font-semibold">
-                    {discountPrice.toFixed(2)}
-                    <FaDollarSign size={18} />
-                  </span>
-                </div>
-              </div>
-            </>
-            <>
-              <div className="flex items-center justify-between pt-5 text-gray-950">
-                <h4 className="text-xl font-semibold capitalize">bill:</h4>
-                <span className="flex items-center gap-1 text-2xl font-bold">
-                  {isHaveDiscount
-                    ? discountPrice.toFixed(2)
-                    : totalPrice.toFixed(2)}
-                  <FaDollarSign size={18} />
-                </span>
-              </div>
-            </>
-            <>
-              <div>
+                <p className="font-semibold">
+                  Line total: {formatMoney(item.lineTotal)} {currency}
+                </p>
+                {!item.isAvailable && (
+                  <p role="alert" className="text-red-600">
+                    This item is unavailable in the selected quantity. Reduce
+                    its quantity or remove it.
+                  </p>
+                )}
                 <Button
-                  onClick={completePurchasesHandler}
+                  onClick={() => remove(item.variantId)}
+                  disabled={removing || checkingOut}
                   size="small"
                   variant="contained"
-                  className="!mt-5 w-full !rounded-full !bg-green-400 !font-montserrat 450:!text-base"
+                  color="error"
+                  className="!mt-2 !self-end !font-montserrat"
+                  startIcon={<HiTrash />}
                 >
-                  Complete Purchase
+                  Delete
                 </Button>
               </div>
-            </>
-          </div>
+            </ProductContainer>
+          ))}
         </div>
-      </>
+      </CartSection>
+      <div className="sticky top-[100px] h-full basis-full md:basis-1/3 md:self-start">
+        <TopBarTitle
+          title="Order information"
+          icon={<HiOutlineCreditCard size={30} />}
+        />
+        <div className="border px-3 py-5">
+          <div className="flex items-center justify-between text-gray-950">
+            <h4 className="text-xl font-semibold">Total</h4>
+            <span className="flex items-center gap-1 text-2xl font-bold">
+              {formatMoney(total)}
+              <FaDollarSign size={18} />
+            </span>
+          </div>
+          <p className="mt-3 text-sm text-neutral-500">
+            {currency} · Discounts included. Payment has not been collected.
+          </p>
+          <Button
+            onClick={() =>
+              insertPurchases({
+                idempotencyKey: checkoutKey(user.id, cartItems),
+              })
+            }
+            disabled={checkingOut || unavailable}
+            variant="contained"
+            className="!mt-5 w-full !rounded-full !bg-green-400 !font-montserrat"
+          >
+            {checkingOut ? "Placing order…" : "Complete Purchase"}
+          </Button>
+        </div>
+      </div>
     </section>
   );
 }
-
 export default Cart;

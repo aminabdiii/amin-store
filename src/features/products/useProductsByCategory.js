@@ -1,8 +1,7 @@
+import { nextPage } from "../../services/apiClient";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "react-router-dom";
 import { getProductsByCategory } from "../../services/productsApi";
-
-const PRODUCTS_PER_SCROLL = 9;
 
 export function useProductsByCategory() {
   const params = useParams();
@@ -45,15 +44,11 @@ export function useProductsByCategory() {
         search,
         pageParam,
       }),
-    getNextPageParam: (lastPage, pages) => {
-      return lastPage.length === PRODUCTS_PER_SCROLL
-        ? pages.length + 1
-        : undefined;
-    },
+    getNextPageParam: nextPage,
   });
 
   return {
-    pages: data?.pages,
+    pages: data?.pages.map((page) => page.data),
     isLoading,
     error,
     refetch,

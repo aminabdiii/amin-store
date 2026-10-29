@@ -8,7 +8,7 @@ function AdminPanelSecurity({ children }) {
   const { userRole, isLoading, error, refetch } = useGetUserRole();
   if (isLoading) return <PageLoader />;
   if (error) return <QueryError onRetry={refetch} />;
-  if (userRole?.role !== "admin") return <Navigate to={panelPath()} replace />;
+  if (userRole?.role !== "ADMIN") return <Navigate to={panelPath()} replace />;
   return children || <Outlet />;
 }
 
