@@ -12,7 +12,7 @@ export function useLogout() {
     mutationFn: logoutApi,
 
     onSuccess: () => {
-      navigate("/Home");
+      navigate("/home", { replace: true });
       queryClient.clear();
       Swal.fire({
         title: "logout successfully",

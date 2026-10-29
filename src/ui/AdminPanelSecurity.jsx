@@ -1,26 +1,15 @@
-import { Backdrop, CircularProgress } from "@mui/material";
+import { Navigate, Outlet } from "react-router-dom";
 import { useGetUserRole } from "../hooks/useGetUserRole";
-import { Navigate } from "react-router-dom";
-import Swal from "sweetalert2";
+import { panelPath } from "../routing/paths";
+import PageLoader from "./PageLoader";
+import QueryError from "./QueryError";
 
 function AdminPanelSecurity({ children }) {
-  const { userRole, isLoading } = useGetUserRole();
-
-  if (isLoading)
-    return (
-      <Backdrop
-        sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
-        open={true}
-      >
-        <CircularProgress color="inherit" />
-      </Backdrop>
-    );
-  if (userRole.role !== "admin") {
-    Swal.fire({ title: "you are not admin", icon: "info" });
-    return <Navigate to={"/userPanel/accountDetails"} />;
-  }
-
-  return children;
+  const { userRole, isLoading, error, refetch } = useGetUserRole();
+  if (isLoading) return <PageLoader />;
+  if (error) return <QueryError onRetry={refetch} />;
+  if (userRole?.role !== "admin") return <Navigate to={panelPath()} replace />;
+  return children || <Outlet />;
 }
 
 export default AdminPanelSecurity;

@@ -1,3 +1,4 @@
+import { articlePath } from "../../../routing/paths";
 import { HiPencil } from "react-icons/hi2";
 import { Link } from "react-router-dom";
 
@@ -6,12 +7,12 @@ function ArticleItemAdminPanel({ article, setEditArticleId }) {
 
   return (
     <div key={id} className="overflow-hidden rounded-lg border shadow">
-      <Link to={`/detailsArticle?id=${id}`} target="_blank">
+      <Link to={articlePath(id)} target="_blank">
         <img src={image} alt={title} />
       </Link>
       <div className="p-2">
         <Link
-          to={`/detailsArticle?id=${id}`}
+          to={articlePath(id)}
           target="_blank"
           className="line-clamp-3 h-[60px] text-sm font-medium"
         >

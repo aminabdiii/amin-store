@@ -1,3 +1,5 @@
+import NotFound from "../../ui/NotFound";
+import QueryError from "../../ui/QueryError";
 import { useDetailsProduct } from "./useDetailsProduct";
 import { useGetUser } from "../../hooks/useGetUser";
 import { useGetCommentsByProductId } from "./useGetCommentsByProductId";
@@ -12,12 +14,20 @@ import { Skeleton } from "@mui/material";
 import RelatedProducts from "./RelatedProducts";
 
 function DetailsProduct() {
-  const { product, isLoading } = useDetailsProduct();
+  const { product, isLoading, error, refetch } = useDetailsProduct();
   const { user, isLoading: isUserLoading } = useGetUser();
-  const { comments, isLoading: isGettingComments } =
-    useGetCommentsByProductId();
+  const {
+    comments,
+    isLoading: isGettingComments,
+    error: commentsError,
+    refetch: refetchComments,
+  } = useGetCommentsByProductId();
 
   const loading = isLoading || isUserLoading || isGettingComments;
+
+  if (error) return <QueryError onRetry={refetch} />;
+  if (!isLoading && !product) return <NotFound />;
+  if (commentsError) return <QueryError onRetry={refetchComments} />;
 
   if (loading) {
     return (

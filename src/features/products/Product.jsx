@@ -1,3 +1,4 @@
+import { productPath } from "../../routing/paths";
 import { FaClockRotateLeft, FaDollarSign } from "react-icons/fa6";
 import { HiStar } from "react-icons/hi";
 import { Link } from "react-router-dom";
@@ -21,7 +22,7 @@ function Product({ product }) {
 
   return (
     <Link
-      to={`/DetailsProduct?productId=${id}`}
+      to={productPath(id)}
       className={`group relative flex h-[inherit] w-full flex-col justify-between gap-1 rounded-md border bg-white py-4 transition-all duration-200 hover:z-10 hover:shadow-md sm:flex-col ${isPreSale && isAvailable && "hover:shadow-orange-500"} ${isAvailable && !isPreSale && "hover:shadow-violet-500"} ${!isAvailable && "grayscale hover:shadow-gray-500"}`}
     >
       <div className="flex justify-center p-2">

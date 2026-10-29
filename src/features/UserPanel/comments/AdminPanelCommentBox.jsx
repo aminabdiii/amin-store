@@ -1,3 +1,4 @@
+import { productPath } from "../../../routing/paths";
 import { HiArchiveBox, HiCheckBadge, HiEye, HiTrash } from "react-icons/hi2";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -66,7 +67,7 @@ function AdminPanelCommentBox({
           <span>content</span>
         </button>
         <Link
-          to={`/DetailsProduct?productId=${productId}`}
+          to={productPath(productId)}
           target="_blank"
           className="flex w-full items-center justify-center gap-1 rounded-xl bg-violet-500 p-1.5 font-semibold capitalize text-white focus:bg-purple-500"
         >

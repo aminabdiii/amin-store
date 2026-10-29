@@ -1,3 +1,4 @@
+import { productPath } from "../../routing/paths";
 import {
   HiOutlineCreditCard,
   HiOutlineShoppingBag,
@@ -160,11 +161,7 @@ function Cart() {
               return (
                 <ProductContainer key={title}>
                   <ImageContainer>
-                    <Image
-                      src={image}
-                      alt={title}
-                      path={`/DetailsProduct?productId=${id}`}
-                    />
+                    <Image src={image} alt={title} path={productPath(id)} />
                     <CounterSection
                       cartProducts={cartProducts}
                       productId={id}
@@ -173,10 +170,7 @@ function Cart() {
                   </ImageContainer>
 
                   <div className="flex h-full flex-grow flex-col gap-3 pr-3">
-                    <ProductTitleLink
-                      title={title}
-                      path={`/DetailsProduct?productId=${id}`}
-                    />
+                    <ProductTitleLink title={title} path={productPath(id)} />
                     <PriceSection
                       count={count}
                       price={price}

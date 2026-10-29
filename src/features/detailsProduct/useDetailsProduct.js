@@ -1,21 +1,21 @@
 import { useQuery } from "@tanstack/react-query";
 import { getDetailProduct } from "../../services/productsApi";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 export function useDetailsProduct() {
-  const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
-
-  const productId = searchParams.get("productId");
-  const { data: product, isLoading } = useQuery({
+  const { productId } = useParams();
+  const {
+    data: product,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
     queryKey: [`product-${productId}`],
     queryFn: () => getDetailProduct({ id: productId }),
 
+    enabled: !!productId,
     retry: false,
-    throwOnError() {
-      navigate("/notfound");
-    },
   });
 
-  return { product, isLoading };
+  return { product, isLoading, error, refetch };
 }

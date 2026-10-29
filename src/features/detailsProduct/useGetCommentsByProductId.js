@@ -1,14 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
-import { useSearchParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { getCommentsByProductIdApi } from "../../services/commentsApi";
 
 export function useGetCommentsByProductId() {
-  const [searchParams] = useSearchParams();
-  const productId = searchParams.get("productId");
-  const { data: comments, isLoading } = useQuery({
+  const { productId } = useParams();
+  const {
+    data: comments = [],
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
+    enabled: !!productId,
     queryKey: [`comments-${productId}`],
     queryFn: () => getCommentsByProductIdApi({ productId }),
   });
 
-  return { comments, isLoading };
+  return { comments, isLoading, error, refetch };
 }

@@ -1,4 +1,5 @@
-import { Link, useNavigate } from "react-router-dom";
+import { getReturnPath } from "../../routing/paths";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Logo from "../../ui/Logo";
 import { useState } from "react";
 import { Button } from "@mui/material";
@@ -17,6 +18,7 @@ function SignIn() {
   } = useForm();
 
   const navigate = useNavigate();
+  const { state } = useLocation();
   const { signIn, isPending } = useSignInUser();
   const [isShowPassword, setIsShowPassword] = useState(false);
 
@@ -28,8 +30,10 @@ function SignIn() {
     signIn(
       { fullName, userName, email, password },
       {
-        onSuccess: () => {
-          navigate("/home");
+        onSuccess: (data) => {
+          navigate(data.session ? getReturnPath(state) : "/home", {
+            replace: true,
+          });
           reset();
         },
       },
@@ -164,7 +168,9 @@ function SignIn() {
               />
             </div>
             <div>
-              <Link to={"/login"}>Already have account?</Link>
+              <Link to="/login" state={state}>
+                Already have account?
+              </Link>
             </div>
           </div>
 

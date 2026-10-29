@@ -1,3 +1,4 @@
+import { categoryPath } from "../routing/paths";
 import { Breadcrumbs } from "@mui/material";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import { Link } from "react-router-dom";
@@ -9,7 +10,7 @@ function BreadCrumbs({ title, category }) {
     </Link>,
     <Link
       key="2"
-      to={`/products/${category}`}
+      to={categoryPath(category)}
       className="underline-offset-2 hover:underline"
     >
       {category}

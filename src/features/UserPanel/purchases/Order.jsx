@@ -1,3 +1,4 @@
+import { productPath } from "../../../routing/paths";
 import { CheckCircle, Close, Timer } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -69,7 +70,7 @@ function Order({ purchaseItem, type = "user", deliveryPurchase }) {
         {products.map((product) => {
           return (
             <Link
-              to={`/DetailsProduct?productId=${product.id}`}
+              to={productPath(product.id)}
               key={product.id}
               title={product.title}
               className="relative flex w-full justify-center"

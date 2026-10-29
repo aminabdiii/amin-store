@@ -1,3 +1,5 @@
+import NotFound from "../../ui/NotFound";
+import QueryError from "../../ui/QueryError";
 import { Skeleton } from "@mui/material";
 import { useDetailsArticle } from "./useDetailsArticle";
 
@@ -7,7 +9,7 @@ import { Share } from "@mui/icons-material";
 const SKELETON_COUNT = 5;
 
 function DetailsArticle() {
-  const { detailsArticle, isLoading } = useDetailsArticle();
+  const { detailsArticle, isLoading, error, refetch } = useDetailsArticle();
 
   if (isLoading) {
     return (
@@ -27,6 +29,9 @@ function DetailsArticle() {
       </div>
     );
   }
+
+  if (error) return <QueryError onRetry={refetch} />;
+  if (!detailsArticle) return <NotFound />;
 
   const { title, content, image } = detailsArticle;
 

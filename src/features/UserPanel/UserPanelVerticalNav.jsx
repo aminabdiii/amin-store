@@ -8,7 +8,7 @@ import {
   HiOutlineUser,
   HiOutlineUsers,
 } from "react-icons/hi2";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useLogout } from "./useLogout";
 import { HiOutlineHeart } from "react-icons/hi";
 import { Logout } from "@mui/icons-material";
@@ -47,8 +47,6 @@ function Toggle() {
 function Window({ isAdmin }) {
   const { isOpen, open } = useContext(UserPanelVerticalNavContext);
   const { logout } = useLogout();
-  const params = useParams();
-  const { page } = params;
 
   function logoutHandler() {
     open(false);
@@ -76,7 +74,6 @@ function Window({ isAdmin }) {
       <ul className="space-y-4 py-4 font-medium capitalize xs:py-5">
         <UserPanelAsideMobileItem
           path={"accountDetails"}
-          pageAddress={page}
           onClick={() => open(false)}
         >
           <HiOutlineUser size={23} />
@@ -84,7 +81,6 @@ function Window({ isAdmin }) {
         </UserPanelAsideMobileItem>
         <UserPanelAsideMobileItem
           path={"purchases"}
-          pageAddress={page}
           onClick={() => open(false)}
         >
           <HiOutlineShoppingBag size={23} />
@@ -92,7 +88,6 @@ function Window({ isAdmin }) {
         </UserPanelAsideMobileItem>
         <UserPanelAsideMobileItem
           path={"favoriteList"}
-          pageAddress={page}
           onClick={() => open(false)}
         >
           <HiOutlineHeart size={23} />
@@ -103,7 +98,6 @@ function Window({ isAdmin }) {
           <>
             <UserPanelAsideMobileItem
               path={"users"}
-              pageAddress={page}
               onClick={() => open(false)}
               type="admin"
             >
@@ -112,7 +106,6 @@ function Window({ isAdmin }) {
             </UserPanelAsideMobileItem>
             <UserPanelAsideMobileItem
               path={"products"}
-              pageAddress={page}
               onClick={() => open(false)}
               type="admin"
             >
@@ -121,7 +114,6 @@ function Window({ isAdmin }) {
             </UserPanelAsideMobileItem>
             <UserPanelAsideMobileItem
               path={"articles"}
-              pageAddress={page}
               onClick={() => open(false)}
               type="admin"
             >
@@ -130,7 +122,6 @@ function Window({ isAdmin }) {
             </UserPanelAsideMobileItem>
             <UserPanelAsideMobileItem
               path={"allPurchases"}
-              pageAddress={page}
               onClick={() => open(false)}
               type="admin"
             >
@@ -139,7 +130,6 @@ function Window({ isAdmin }) {
             </UserPanelAsideMobileItem>
             <UserPanelAsideMobileItem
               path={"comments"}
-              pageAddress={page}
               onClick={() => open(false)}
               type="admin"
             >

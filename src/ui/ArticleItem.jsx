@@ -1,3 +1,4 @@
+import { articlePath } from "../routing/paths";
 import { Link } from "react-router-dom";
 
 function ArticleItem({ article }) {
@@ -5,7 +6,7 @@ function ArticleItem({ article }) {
 
   return (
     <div className="group overflow-hidden rounded-md border bg-white text-[13px] font-semibold leading-6 shadow">
-      <Link to={`/detailsArticle?id=${id}`}>
+      <Link to={articlePath(id)}>
         <div className="relative">
           <img src={image} alt={title} />
           <div className="invisible absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-all duration-300 group-hover:visible group-hover:opacity-100">

@@ -30,9 +30,9 @@ export async function getDetailProduct({ id }) {
     .from("products")
     .select("*")
     .eq("id", id)
-    .single();
+    .maybeSingle();
 
-  if (error) throw new Error(error);
+  if (error) throw error;
 
   return data;
 }

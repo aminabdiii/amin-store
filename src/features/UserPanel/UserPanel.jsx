@@ -8,7 +8,7 @@ import {
 } from "react-icons/hi2";
 import { FaRegComments } from "react-icons/fa6";
 
-import { Link, useParams } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 import { Logout } from "@mui/icons-material";
 import { useGetUser } from "../../hooks/useGetUser";
 import { useGetUserCartItems } from "../cart/useGetUserCartItems";
@@ -23,32 +23,24 @@ import Swal from "sweetalert2";
 
 import { lazy, Suspense } from "react";
 import PageLoader from "../../ui/PageLoader";
+import QueryError from "../../ui/QueryError";
 
-const AccountDetails = lazy(() => import("./accountDetails/AccountDetails"));
-const FavoriteList = lazy(() => import("./favoriteList/FavoriteList"));
-const Purchases = lazy(() => import("./purchases/Purchases"));
-const Users = lazy(() => import("./users/Users"));
-const AdminPanelSecurity = lazy(() => import("../../ui/AdminPanelSecurity"));
-const AdminPanelProducts = lazy(() => import("./products/AdminPanelProducts"));
-const AdminArticlesPage = lazy(() => import("./Articles/AdminArticlesPage"));
-const AdminPanelAllPurchases = lazy(
-  () => import("./allPurchases/AdminPanelAllPurchases"),
-);
 const UserPanelAsideItem = lazy(() => import("../../ui/UserPanelAsideItem"));
-const AdminPanelComments = lazy(() => import("./comments/AdminPanelComments"));
 
 function UserPanel() {
   const { user, isLoading: isLoadingUser } = useGetUser();
   const { cartProducts, isLoading: isLoadingCart } = useGetUserCartItems();
 
-  const { userRole, isLoading: gettingUserRole } = useGetUserRole();
+  const {
+    userRole,
+    isLoading: gettingUserRole,
+    error: roleError,
+    refetch: refetchRole,
+  } = useGetUserRole();
 
   const isLoading = isLoadingUser || isLoadingCart || gettingUserRole;
 
-  const params = useParams();
   const { logout } = useLogout();
-
-  const { page } = params;
 
   if (isLoading) {
     return (
@@ -87,7 +79,9 @@ function UserPanel() {
     );
   }
 
-  const isAdmin = userRole.role === "admin";
+  if (roleError) return <QueryError onRetry={refetchRole} />;
+
+  const isAdmin = userRole?.role === "admin";
 
   const cartItemsLength = cartProducts?.cart_items?.length;
 
@@ -105,7 +99,7 @@ function UserPanel() {
   }
 
   return (
-    <Suspense Suspense fallback={<PageLoader />}>
+    <Suspense fallback={<PageLoader />}>
       <div className="relative">
         <div className="p-3 shadow md:hidden">
           <div className="mx-auto flex max-w-7xl items-center justify-between">
@@ -129,58 +123,38 @@ function UserPanel() {
               </Link>
             </div>
             <ul className="flex flex-col gap-4 text-sm font-medium capitalize">
-              <UserPanelAsideItem path={"accountDetails"} pageAddress={page}>
+              <UserPanelAsideItem path={"accountDetails"}>
                 <HiOutlineUser size={21} />
                 account details
               </UserPanelAsideItem>
-              <UserPanelAsideItem path={"purchases"} pageAddress={page}>
+              <UserPanelAsideItem path={"purchases"}>
                 <HiOutlineShoppingBag size={21} />
                 Purchases
               </UserPanelAsideItem>
-              <UserPanelAsideItem path={"favoriteList"} pageAddress={page}>
+              <UserPanelAsideItem path={"favoriteList"}>
                 <HiOutlineHeart size={21} />
                 Favorite List
               </UserPanelAsideItem>
 
               {isAdmin && (
                 <>
-                  <UserPanelAsideItem
-                    path={"users"}
-                    pageAddress={page}
-                    type="admin"
-                  >
+                  <UserPanelAsideItem path={"users"} type="admin">
                     <HiOutlineUsers size={21} />
                     users
                   </UserPanelAsideItem>
-                  <UserPanelAsideItem
-                    path={"products"}
-                    pageAddress={page}
-                    type="admin"
-                  >
+                  <UserPanelAsideItem path={"products"} type="admin">
                     <HiOutlineSquares2X2 size={21} />
                     products
                   </UserPanelAsideItem>
-                  <UserPanelAsideItem
-                    path={"articles"}
-                    pageAddress={page}
-                    type="admin"
-                  >
+                  <UserPanelAsideItem path={"articles"} type="admin">
                     <HiOutlineBookOpen size={21} />
                     articles
                   </UserPanelAsideItem>
-                  <UserPanelAsideItem
-                    path={"allPurchases"}
-                    pageAddress={page}
-                    type="admin"
-                  >
+                  <UserPanelAsideItem path={"allPurchases"} type="admin">
                     <HiOutlineShoppingCart size={21} />
                     allPurchases
                   </UserPanelAsideItem>
-                  <UserPanelAsideItem
-                    path={"comments"}
-                    pageAddress={page}
-                    type="admin"
-                  >
+                  <UserPanelAsideItem path={"comments"} type="admin">
                     <FaRegComments size={21} />
                     Comments
                   </UserPanelAsideItem>
@@ -197,36 +171,7 @@ function UserPanel() {
               </li>
             </ul>
           </section>
-          {page === "accountDetails" && (
-            <AccountDetails user={user} cartItemsLength={cartItemsLength} />
-          )}
-          {page === "purchases" && <Purchases />}
-          {page === "favoriteList" && <FavoriteList />}
-          {page === "users" && (
-            <AdminPanelSecurity>
-              <Users />
-            </AdminPanelSecurity>
-          )}
-          {page === "products" && (
-            <AdminPanelSecurity>
-              <AdminPanelProducts />
-            </AdminPanelSecurity>
-          )}
-          {page === "articles" && (
-            <AdminPanelSecurity>
-              <AdminArticlesPage />
-            </AdminPanelSecurity>
-          )}
-          {page === "allPurchases" && (
-            <AdminPanelSecurity>
-              <AdminPanelAllPurchases />
-            </AdminPanelSecurity>
-          )}
-          {page === "comments" && (
-            <AdminPanelSecurity>
-              <AdminPanelComments />
-            </AdminPanelSecurity>
-          )}
+          <Outlet context={{ user, cartItemsLength }} />
         </div>
       </div>
     </Suspense>

@@ -1,3 +1,4 @@
+import { productPath } from "../../../routing/paths";
 import { HiPencil } from "react-icons/hi2";
 import { Link } from "react-router-dom";
 
@@ -15,10 +16,7 @@ function AdminProductBox({ product }) {
       className="flex flex-col gap-3 rounded-[27px] bg-white p-2 shadow-sm"
     >
       <>
-        <Link
-          className="border-b-2 pb-2"
-          to={`/DetailsProduct?productId=${id}`}
-        >
+        <Link className="border-b-2 pb-2" to={productPath(id)}>
           <img src={image} alt="" />
         </Link>
       </>
@@ -27,7 +25,7 @@ function AdminProductBox({ product }) {
           <>
             <div>
               <Link
-                to={`/DetailsProduct?productId=${id}`}
+                to={productPath(id)}
                 className="line-clamp-2 min-h-8 text-xs font-semibold"
               >
                 {title}

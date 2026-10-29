@@ -1,26 +1,16 @@
-import { useNavigate } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useGetUser } from "../hooks/useGetUser";
-import { useEffect } from "react";
-import Swal from "sweetalert2";
+import PageLoader from "./PageLoader";
+import QueryError from "./QueryError";
 
 function SecureComponent({ children }) {
-  const { user, isLoading } = useGetUser();
-  const navigate = useNavigate();
-
-  useEffect(
-    function () {
-      if (!user?.user_metadata?.userName && !isLoading) {
-        navigate("/");
-        Swal.fire({
-          title: "you aren't log in",
-          icon: "error",
-        });
-      }
-    },
-    [navigate, user, isLoading],
-  );
-
-  return !isLoading && user?.user_metadata?.userName && children;
+  const { user, isLoading, error, refetch } = useGetUser();
+  const location = useLocation();
+  if (isLoading) return <PageLoader />;
+  if (error) return <QueryError onRetry={refetch} />;
+  if (!user?.id)
+    return <Navigate to="/login" replace state={{ from: location }} />;
+  return children || <Outlet />;
 }
 
 export default SecureComponent;

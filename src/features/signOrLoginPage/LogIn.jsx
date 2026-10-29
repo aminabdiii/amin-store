@@ -1,5 +1,6 @@
+import { getReturnPath } from "../../routing/paths";
 /* eslint-disable react/no-unescaped-entities */
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Logo from "../../ui/Logo";
 import { useState } from "react";
 import { Button } from "@mui/material";
@@ -16,6 +17,7 @@ function LogIn() {
     reset,
   } = useForm();
   const navigate = useNavigate();
+  const { state } = useLocation();
   const [isShowPassword, setIsShowPassword] = useState(false);
 
   const { login, isPending } = useLoginUser();
@@ -27,7 +29,7 @@ function LogIn() {
       { email, password },
       {
         onSettled: () => reset(),
-        onSuccess: () => navigate("/home"),
+        onSuccess: () => navigate(getReturnPath(state), { replace: true }),
       },
     );
   }
@@ -103,7 +105,9 @@ function LogIn() {
               />
             </div>
             <div>
-              <Link to={"/sign-in"}>Doesn't have an account?</Link>
+              <Link to="/sign-in" state={state}>
+                Doesn't have an account?
+              </Link>
             </div>
           </div>
 

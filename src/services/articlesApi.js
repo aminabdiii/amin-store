@@ -27,9 +27,9 @@ export async function getDetailsArticle({ id }) {
     .from("articles")
     .select("*")
     .eq("id", id)
-    .single();
+    .maybeSingle();
 
-  if (error) throw new Error(error);
+  if (error) throw error;
 
   return data;
 }
