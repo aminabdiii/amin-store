@@ -1,11 +1,13 @@
+import QueryError from "./QueryError";
 import { Skeleton } from "@mui/material";
 import { useCategories } from "../hooks/useCategories";
 import SubMenuItem from "./SubMenuItem";
 
 function SubMenuContainer() {
-  const { categories, isLoading } = useCategories();
+  const { categories = [], isLoading, error, refetch } = useCategories();
   return (
     <div className="invisible absolute -right-48 top-[50.2px] -z-10 h-auto w-auto translate-y-5 overflow-hidden rounded-b-2xl border border-b-4 border-b-violet-500 bg-white opacity-0 shadow-xl group-hover:visible group-hover:z-10 group-hover:translate-y-0 group-hover:opacity-100 group-hover:transition-all">
+      {error && <QueryError onRetry={refetch} />}
       {isLoading ? (
         <Skeleton height={480} width={455} variant="rounded" animation="wave" />
       ) : (

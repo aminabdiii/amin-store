@@ -1,3 +1,4 @@
+import QueryError from "../../ui/QueryError";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { useDiscountProducts } from "../products/useDiscountProducts";
 import { Autoplay, Grid, Pagination } from "swiper/modules";
@@ -11,7 +12,12 @@ import "swiper/css/grid";
 import "swiper/css/pagination";
 
 function DiscountProducts() {
-  const { discountProducts, isLoading } = useDiscountProducts();
+  const {
+    discountProducts = [],
+    isLoading,
+    error,
+    refetch,
+  } = useDiscountProducts();
 
   return (
     <div>
@@ -20,6 +26,7 @@ function DiscountProducts() {
         path="/products?discount-products=true"
         buttonTextContent="discounts"
       />
+      {error && <QueryError onRetry={refetch} />}
       {isLoading && (
         <div className="grid grid-cols-1 gap-5 vxs:grid-cols-2 sm:grid-cols-3 850:grid-cols-4">
           <Skeleton
@@ -44,7 +51,7 @@ function DiscountProducts() {
           />
         </div>
       )}
-      {!isLoading && (
+      {!isLoading && discountProducts.length > 0 && (
         <Swiper
           className="mySwiper relative mt-5 !px-1 !pb-7"
           modules={[Autoplay, Pagination, Grid]}

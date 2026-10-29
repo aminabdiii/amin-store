@@ -1,3 +1,4 @@
+import QueryError from "../../ui/QueryError";
 import { Skeleton } from "@mui/material";
 import HeadingSection from "../home/HeadingSection";
 import Product from "../products/Product";
@@ -5,7 +6,12 @@ import { useRelatedProducts } from "./useRelatedProducts";
 import Empty from "../../ui/Empty";
 
 function RelatedProducts({ category, expectProductId }) {
-  const { relatedProducts, isLoading } = useRelatedProducts({
+  const {
+    relatedProducts = [],
+    isLoading,
+    error,
+    refetch,
+  } = useRelatedProducts({
     category,
     expectProductId,
   });
@@ -43,13 +49,14 @@ function RelatedProducts({ category, expectProductId }) {
   return (
     <div className="space-y-5">
       <HeadingSection title="Related Products" />
+      {error && <QueryError onRetry={refetch} />}
 
       <div className="grid grid-cols-1 gap-5 vxs:grid-cols-2 sm:grid-cols-3 850:grid-cols-4">
         {relatedProducts.map((product) => {
           return <Product product={product} key={product.id} />;
         })}
       </div>
-      {!relatedProducts.length && (
+      {!error && !relatedProducts.length && (
         <div className="w-full">
           <Empty
             title={"no related products"}

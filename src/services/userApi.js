@@ -3,7 +3,10 @@ import { adminAuthClient, supabase } from "../../supabase";
 export async function getUserApi() {
   const {
     data: { user },
+    error,
   } = await supabase.auth.getUser();
+
+  if (error && error.name !== "AuthSessionMissingError") throw error;
 
   return user;
 }

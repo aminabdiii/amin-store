@@ -1,14 +1,16 @@
+import QueryError from "../../ui/QueryError";
 import { Skeleton } from "@mui/material";
 import FeatureItem from "./FeatureItem";
 import HeadingSection from "./HeadingSection";
 import { useFeatures } from "./useFeatures";
 
 function Features() {
-  const { features, isLoading } = useFeatures();
+  const { features = [], isLoading, error, refetch } = useFeatures();
 
   return (
     <div>
       <HeadingSection title="why buy from us?" />
+      {error && <QueryError onRetry={refetch} />}
       {isLoading && (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           <Skeleton

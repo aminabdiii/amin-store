@@ -18,36 +18,45 @@ export function useProductsByCategory() {
 
   const search = searchParams.get("s");
 
-  const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
-    useInfiniteQuery({
-      queryKey: [
-        `product-${category}-${sort || "default"}`,
+  const {
+    data,
+    error,
+    refetch,
+    isLoading,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    queryKey: [
+      `product-${category}-${sort || "default"}`,
+      presale,
+      fastestShipping,
+      availableProducts,
+      discountProducts,
+      search,
+    ],
+    queryFn: ({ pageParam = 1 }) =>
+      getProductsByCategory({
+        category,
+        sort: sort || "rate",
         presale,
-        fastestShipping,
         availableProducts,
         discountProducts,
         search,
-      ],
-      queryFn: ({ pageParam = 1 }) =>
-        getProductsByCategory({
-          category,
-          sort: sort || "rate",
-          presale,
-          availableProducts,
-          discountProducts,
-          search,
-          pageParam,
-        }),
-      getNextPageParam: (lastPage, pages) => {
-        return lastPage.length === PRODUCTS_PER_SCROLL
-          ? pages.length + 1
-          : undefined;
-      },
-    });
+        pageParam,
+      }),
+    getNextPageParam: (lastPage, pages) => {
+      return lastPage.length === PRODUCTS_PER_SCROLL
+        ? pages.length + 1
+        : undefined;
+    },
+  });
 
   return {
     pages: data?.pages,
     isLoading,
+    error,
+    refetch,
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,

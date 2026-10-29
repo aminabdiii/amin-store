@@ -1,3 +1,4 @@
+import QueryError from "../ui/QueryError";
 import { Skeleton } from "@mui/material";
 import { useArticles } from "../features/Articles/useArticles.js";
 import Container from "../ui/Container.jsx";
@@ -8,7 +9,7 @@ import PageTitle from "../ui/PageTitle.jsx";
 const SKELETON_COUNT = 6;
 
 function Articles() {
-  const { articles, isLoading } = useArticles();
+  const { articles = [], isLoading, error, refetch } = useArticles();
 
   if (isLoading) {
     return (
@@ -33,7 +34,10 @@ function Articles() {
 
   return (
     <Container>
-      <PageTitle length={articles.length} categoryType="article" />
+      {error && <QueryError onRetry={refetch} />}
+      {!error || articles.length > 0 ? (
+        <PageTitle length={articles.length} categoryType="article" />
+      ) : null}
 
       <div className="my-5 grid grid-cols-1 gap-6 xs:grid-cols-2 850:grid-cols-3 xl:grid-cols-4">
         {articles.map((article) => {

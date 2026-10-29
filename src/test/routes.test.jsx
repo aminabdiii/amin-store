@@ -140,6 +140,7 @@ describe("public routes and compatibility", () => {
   });
   it("offers retry on category failure without mounting product details", async () => {
     state.error = new Error("Offline");
+    state.categories = undefined;
     open("/products/123");
     fireEvent.click(await screen.findByRole("button", { name: /try again/i }));
     expect(state.refetch).toHaveBeenCalledOnce();

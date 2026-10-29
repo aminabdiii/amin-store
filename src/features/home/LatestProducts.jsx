@@ -1,3 +1,4 @@
+import QueryError from "../../ui/QueryError";
 import HeadingSection from "./HeadingSection";
 import Product from "../products/Product";
 
@@ -11,7 +12,12 @@ import { Autoplay, Pagination } from "swiper/modules";
 import { Skeleton } from "@mui/material";
 
 function LatestProducts() {
-  const { products, isLoading } = useLimitProducts({ limit: 8 });
+  const {
+    products = [],
+    isLoading,
+    error,
+    refetch,
+  } = useLimitProducts({ limit: 8 });
 
   return (
     <div id="last-products">
@@ -20,6 +26,7 @@ function LatestProducts() {
         buttonTextContent="All Products"
         path="/products"
       />
+      {error && <QueryError onRetry={refetch} />}
       {isLoading && (
         <div className="grid grid-cols-1 gap-5 vxs:grid-cols-2 sm:grid-cols-3 850:grid-cols-4">
           <Skeleton

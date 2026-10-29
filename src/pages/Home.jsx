@@ -1,3 +1,4 @@
+import ContentBoundary from "../ui/ContentBoundary";
 import Container from "../ui/Container";
 import HeroSection from "../features/home/HeroSection";
 import LatestProducts from "../features/home/LatestProducts";
@@ -13,12 +14,24 @@ function Home() {
       <HeroSection />
 
       <Container>
-        <LatestProducts />
-        <Features />
-        <DiscountProducts />
-        <LatestArticles />
-        <MostPopularBrands />
-        <FrequentlyAskedQuestions />
+        <ContentBoundary>
+          <LatestProducts />
+        </ContentBoundary>
+        <ContentBoundary>
+          <Features />
+        </ContentBoundary>
+        <ContentBoundary>
+          <DiscountProducts />
+        </ContentBoundary>
+        <ContentBoundary>
+          <LatestArticles />
+        </ContentBoundary>
+        <ContentBoundary>
+          <MostPopularBrands />
+        </ContentBoundary>
+        <ContentBoundary>
+          <FrequentlyAskedQuestions />
+        </ContentBoundary>
       </Container>
     </>
   );

@@ -1,3 +1,4 @@
+import QueryError from "../../ui/QueryError";
 import { productPath } from "../../routing/paths";
 import {
   HiOutlineCreditCard,
@@ -31,11 +32,24 @@ import _ from "lodash";
 
 function Cart() {
   const queryClient = useQueryClient();
-  const { cartProducts, isLoading } = useGetUserCartItems();
-  const { user, isLoading: isGettingUser } = useGetUser();
+  const {
+    cartProducts,
+    isLoading,
+    error: cartError,
+    refetch: refetchCart,
+  } = useGetUserCartItems();
+  const {
+    user,
+    isLoading: isGettingUser,
+    error: userError,
+    refetch: refetchUser,
+  } = useGetUser();
   const { removeFromCartById, isPending } = useDeleteFromCart();
   const { insertPurchases } = useInsertUserPurchases();
   const { clearCart } = useClearUserCart();
+
+  if (userError) return <QueryError onRetry={refetchUser} />;
+  if (cartError) return <QueryError onRetry={refetchCart} />;
 
   if (isLoading || isGettingUser) {
     return (

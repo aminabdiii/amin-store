@@ -10,7 +10,7 @@ function ProductRoute({ children }) {
   const { search, hash } = useLocation();
   const { categories, isLoading, error, refetch } = useCategories();
   if (isLoading) return <PageLoader />;
-  if (error) return <QueryError onRetry={refetch} />;
+  if (error && !categories) return <QueryError onRetry={refetch} />;
   if (categories?.some(({ path }) => path === productId)) {
     return (
       <Navigate replace to={`${categoryPath(productId)}${search}${hash}`} />

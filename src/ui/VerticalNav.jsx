@@ -1,3 +1,4 @@
+import QueryError from "./QueryError";
 import { createContext, useContext, useState } from "react";
 import { createPortal } from "react-dom";
 import {
@@ -140,7 +141,7 @@ function Window({ user, cartProductLength }) {
 }
 
 function CategoryModal() {
-  const { categories, isLoading } = useCategories();
+  const { categories = [], isLoading, error, refetch } = useCategories();
 
   const { isOpenModalCategory, setIsOpenModalCategory } =
     useContext(NavbarContext);
@@ -150,6 +151,7 @@ function CategoryModal() {
       className={`fixed left-0 right-0 top-[60.2px] z-20 flex h-auto w-auto translate-y-5 justify-center overflow-hidden rounded-2xl border border-y-2 border-y-violet-500 bg-white shadow-xl transition-all duration-200 group-hover:z-10 group-hover:translate-y-0 md:hidden ${isOpenModalCategory ? `visible opacity-100` : `invisible opacity-0`} w-full scale-[.95]`}
       id="CategoryModal"
     >
+      {error && <QueryError onRetry={refetch} />}
       {isLoading ? (
         <Loader />
       ) : (

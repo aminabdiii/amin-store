@@ -4,7 +4,14 @@ import { MemoryRouter } from "react-router-dom";
 import DetailsProduct from "../features/detailsProduct/DetailsProduct";
 import DetailsArticle from "../features/DetailsArticle/DetailsArticle";
 
-const state = vi.hoisted(() => ({ error: null, refetch: vi.fn() }));
+const state = vi.hoisted(() => ({
+  error: null,
+  refetch: vi.fn(),
+  product: null,
+  userLoading: false,
+  commentsLoading: false,
+  commentsError: null,
+}));
 vi.mock("../features/detailsProduct/useDetailsProduct", () => ({
   useDetailsProduct: () => ({ product: null, isLoading: false, ...state }),
 }));
@@ -16,10 +23,15 @@ vi.mock("../features/DetailsArticle/useDetailsArticle", () => ({
   }),
 }));
 vi.mock("../hooks/useGetUser", () => ({
-  useGetUser: () => ({ user: null, isLoading: false }),
+  useGetUser: () => ({ user: null, isLoading: state.userLoading }),
 }));
 vi.mock("../features/detailsProduct/useGetCommentsByProductId", () => ({
-  useGetCommentsByProductId: () => ({ comments: [], isLoading: false }),
+  useGetCommentsByProductId: () => ({
+    comments: [],
+    isLoading: state.commentsLoading,
+    error: state.commentsError,
+    refetch: state.refetch,
+  }),
 }));
 vi.mock("../features/detailsProduct/InformationSection", () => ({
   default: () => null,
@@ -35,7 +47,13 @@ vi.mock("../features/detailsProduct/CommentForm", () => ({
 }));
 
 beforeEach(() => {
-  state.error = null;
+  Object.assign(state, {
+    error: null,
+    product: null,
+    userLoading: false,
+    commentsLoading: false,
+    commentsError: null,
+  });
   state.refetch.mockReset();
 });
 describe.each([
@@ -65,4 +83,28 @@ describe.each([
     expect(state.refetch).toHaveBeenCalledOnce();
     expect(screen.queryByText("page not found")).not.toBeInTheDocument();
   });
+});
+
+describe("product secondary services", () => {
+  it.each(["userLoading", "commentsLoading", "commentsError", "error"])(
+    "keeps product details visible during %s",
+    (field) => {
+      state.product = {
+        id: "1",
+        title: "Available product",
+        category: "mobile",
+      };
+      state[field] = field.endsWith("Loading")
+        ? true
+        : new Error("Service offline");
+      render(
+        <MemoryRouter
+          future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+        >
+          <DetailsProduct />
+        </MemoryRouter>,
+      );
+      expect(screen.getByText("Available product")).toBeInTheDocument();
+    },
+  );
 });

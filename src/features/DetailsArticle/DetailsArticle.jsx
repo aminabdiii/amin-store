@@ -30,7 +30,7 @@ function DetailsArticle() {
     );
   }
 
-  if (error) return <QueryError onRetry={refetch} />;
+  if (error && !detailsArticle) return <QueryError onRetry={refetch} />;
   if (!detailsArticle) return <NotFound />;
 
   const { title, content, image } = detailsArticle;
@@ -44,6 +44,7 @@ function DetailsArticle() {
       className="relative mx-auto flex max-w-6xl flex-col gap-5 bg-white p-5"
       id="container"
     >
+      {error && <QueryError onRetry={refetch} />}
       <div className="mb-5">
         <img className="mx-auto rounded-3xl" src={image} alt={title} />
       </div>

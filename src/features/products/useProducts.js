@@ -13,35 +13,44 @@ export function useAllProducts() {
   const discountProducts = searchParams.get("discount-products");
   const search = searchParams.get("s");
 
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useInfiniteQuery({
-      queryKey: [
-        `product-${sort || "rate"}`,
+  const {
+    data,
+    error,
+    refetch,
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    queryKey: [
+      `product-${sort || "rate"}`,
+      presale,
+      fastestShipping,
+      availableProducts,
+      discountProducts,
+      search,
+    ],
+    queryFn: ({ pageParam = 1 }) =>
+      getAllProducts({
+        sort: sort || "rate",
         presale,
-        fastestShipping,
         availableProducts,
         discountProducts,
         search,
-      ],
-      queryFn: ({ pageParam = 1 }) =>
-        getAllProducts({
-          sort: sort || "rate",
-          presale,
-          availableProducts,
-          discountProducts,
-          search,
-          pageParam,
-        }),
-      getNextPageParam: (lastPage, pages) => {
-        return lastPage.length === PRODUCTS_PER_SCROLL
-          ? pages.length + 1
-          : undefined;
-      },
-    });
+        pageParam,
+      }),
+    getNextPageParam: (lastPage, pages) => {
+      return lastPage.length === PRODUCTS_PER_SCROLL
+        ? pages.length + 1
+        : undefined;
+    },
+  });
 
   return {
     pages: data?.pages,
     isLoading,
+    error,
+    refetch,
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,

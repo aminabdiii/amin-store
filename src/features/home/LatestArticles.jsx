@@ -1,3 +1,4 @@
+import QueryError from "../../ui/QueryError";
 import { useLatestArticles } from "../Articles/useLatestArticles";
 import { Skeleton } from "@mui/material";
 
@@ -7,7 +8,12 @@ import ArticleItem from "../../ui/ArticleItem";
 const SKELETON_COUNT = 6;
 
 function LatestArticles() {
-  const { latestArticles, isLoading } = useLatestArticles();
+  const {
+    latestArticles = [],
+    isLoading,
+    error,
+    refetch,
+  } = useLatestArticles();
   return (
     <div className="pt-5">
       <HeadingSection
@@ -15,6 +21,7 @@ function LatestArticles() {
         buttonTextContent="more articles"
         path="/articles"
       />
+      {error && <QueryError onRetry={refetch} />}
       {isLoading && (
         <div className="my-5 grid grid-cols-1 gap-5 vxs:grid-cols-2 xs:grid-cols-2 850:grid-cols-3">
           {Array(SKELETON_COUNT)

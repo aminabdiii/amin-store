@@ -1,3 +1,4 @@
+import ContentBoundary from "../../ui/ContentBoundary";
 import {
   HiOutlineBookOpen,
   HiOutlineShoppingBag,
@@ -171,7 +172,9 @@ function UserPanel() {
               </li>
             </ul>
           </section>
-          <Outlet context={{ user, cartItemsLength }} />
+          <ContentBoundary>
+            <Outlet context={{ user, cartItemsLength }} />
+          </ContentBoundary>
         </div>
       </div>
     </Suspense>

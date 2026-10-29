@@ -1,3 +1,4 @@
+import QueryError from "../../ui/QueryError";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, FreeMode } from "swiper/modules";
 import { usePopularBrands } from "./usePopularBrands";
@@ -10,19 +11,20 @@ import HeadingSection from "./HeadingSection";
 import { Skeleton } from "@mui/material";
 
 function MostPopularBrands() {
-  const { brands, isLoading } = usePopularBrands();
+  const { brands = [], isLoading, error, refetch } = usePopularBrands();
 
   return (
     <div>
       <HeadingSection title="Most Popular Brands" />
 
+      {error && <QueryError onRetry={refetch} />}
       {isLoading && (
         <div className="my-5 w-full">
           <Skeleton variant="rounded" animation="wave" className="!h-[150px]" />
         </div>
       )}
 
-      {!isLoading && (
+      {!isLoading && brands.length > 0 && (
         <Swiper
           spaceBetween={24}
           modules={[Autoplay, FreeMode]}

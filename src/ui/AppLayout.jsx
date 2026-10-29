@@ -1,3 +1,4 @@
+import ContentBoundary from "./ContentBoundary";
 import { Outlet } from "react-router-dom";
 import { useGetUser } from "../hooks/useGetUser";
 import { useGetUserCartItems } from "../features/cart/useGetUserCartItems";
@@ -40,7 +41,9 @@ function AppLayout() {
         </div>
       </header>
       <main className="relative">
-        <Outlet />
+        <ContentBoundary>
+          <Outlet />
+        </ContentBoundary>
       </main>
 
       <Footer />

@@ -15,7 +15,12 @@ import RelatedProducts from "./RelatedProducts";
 
 function DetailsProduct() {
   const { product, isLoading, error, refetch } = useDetailsProduct();
-  const { user, isLoading: isUserLoading } = useGetUser();
+  const {
+    user,
+    isLoading: isUserLoading,
+    error: userError,
+    refetch: refetchUser,
+  } = useGetUser();
   const {
     comments,
     isLoading: isGettingComments,
@@ -23,11 +28,10 @@ function DetailsProduct() {
     refetch: refetchComments,
   } = useGetCommentsByProductId();
 
-  const loading = isLoading || isUserLoading || isGettingComments;
+  const loading = isLoading && !product;
 
-  if (error) return <QueryError onRetry={refetch} />;
+  if (error && !product) return <QueryError onRetry={refetch} />;
   if (!isLoading && !product) return <NotFound />;
-  if (commentsError) return <QueryError onRetry={refetchComments} />;
 
   if (loading) {
     return (
@@ -124,16 +128,31 @@ function DetailsProduct() {
 
   return (
     <Container>
+      {error && <QueryError onRetry={refetch} />}
       <BreadCrumbs title={title} category={category} />
 
       <section className="my-5 flex flex-col items-center gap-8 border-b-2 pb-5 md:flex-row md:items-start md:justify-between">
         <ThumbSwiper product={product} />
-        <InformationSection product={product} userId={user?.id} />
+        <InformationSection
+          product={product}
+          userId={userError ? undefined : user?.id}
+        />
       </section>
 
       <>
-        <CommentForm user={user} commentsLength={comments.length} />
-        <Comments comments={comments} />
+        {userError ? (
+          <QueryError onRetry={refetchUser} />
+        ) : (
+          !isUserLoading && (
+            <CommentForm user={user} commentsLength={comments.length} />
+          )
+        )}
+        {commentsError && <QueryError onRetry={refetchComments} />}
+        {isGettingComments ? (
+          <Skeleton variant="rounded" height={80} />
+        ) : (
+          <Comments comments={comments} />
+        )}
       </>
       <>
         <RelatedProducts category={category} expectProductId={id} />

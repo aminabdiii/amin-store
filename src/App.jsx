@@ -11,7 +11,15 @@ import "react-toastify/dist/ReactToastify.css";
 
 const queryClient = new QueryClient({
   defaultOptions: {
-    queries: { staleTime: 0, retry: 2, refetchOnMount: true },
+    queries: {
+      staleTime: 0,
+      retry: false,
+      refetchOnMount: true,
+      refetchOnReconnect: true,
+      throwOnError: false,
+      networkMode: "always",
+    },
+    mutations: { retry: false, networkMode: "always" },
   },
 });
 
