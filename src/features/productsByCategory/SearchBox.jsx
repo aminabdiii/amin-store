@@ -30,7 +30,7 @@ function SearchBox({ className }) {
         type="text"
         value={search}
         onChange={(event) => setSearch(event.target.value)}
-        placeholder="products"
+        placeholder="Search..."
         className="h-full w-full rounded-md border p-5 pl-12 font-medium shadow shadow-gray-300 outline-none"
       />
       <button className="absolute left-0 h-full p-3" type="submit">
