@@ -1,28 +1,9 @@
 import QueryError from "../../../ui/QueryError";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
+import ArticleEditor from "./ArticleEditor";
 import { CircularProgress, Modal } from "@mui/material";
 import { useForm } from "react-hook-form";
 import ProductsInputBox from "../products/ProductsInputBox";
 
-import {
-  ClassicEditor,
-  Bold,
-  Essentials,
-  Italic,
-  Mention,
-  Paragraph,
-  Undo,
-  Heading,
-  Underline,
-  Link,
-  BlockQuote,
-  Table,
-  FontColor,
-  Highlight,
-  HorizontalLine,
-  FontSize,
-  List,
-} from "ckeditor5";
 import { HiUpload } from "react-icons/hi";
 import { useArticleInformation } from "./useArticleInformation";
 import { toast } from "react-toastify";
@@ -30,7 +11,11 @@ import { useUpdateArticle } from "./useUpdateArticle";
 import { useState } from "react";
 import { useUploadProductImages } from "../products/useUploadProductImages";
 
-function EditArticleModal({ onClose, articleId }) {
+function EditArticleModal(props) {
+  return <EditArticleForm key={props.articleId} {...props} />;
+}
+
+function EditArticleForm({ onClose, articleId }) {
   const {
     handleSubmit,
     register,
@@ -42,7 +27,7 @@ function EditArticleModal({ onClose, articleId }) {
     });
   const { updateArticle } = useUpdateArticle();
   const { uploadProductImage } = useUploadProductImages();
-  const [content, setContent] = useState("");
+  const [content, setContent] = useState(null);
 
   if (isLoading) {
     return (
@@ -69,14 +54,18 @@ function EditArticleModal({ onClose, articleId }) {
   } = articleInformation;
   async function handleEditArticle({ title, image }) {
     try {
-      const uploaded = image.length
+      if (!(content ?? alreadyContent)) {
+        toast.error("content field is required");
+        return;
+      }
+      const uploaded = image?.length
         ? await uploadProductImage({ fileBody: image[0] })
         : null;
       await updateArticle({
         id: articleId,
         title,
         imageId: uploaded?.id ?? alreadyImage?.id,
-        content: content || alreadyContent,
+        content: content ?? alreadyContent,
       });
     } catch (error) {
       toast.error(error.message);
@@ -131,54 +120,11 @@ function EditArticleModal({ onClose, articleId }) {
               })}
             />
           </div>
-          {/* CKEditor */}
+          {/* Article content */}
           <div className="mx-auto w-full">
-            <CKEditor
-              data={`${alreadyContent}`}
-              editor={ClassicEditor}
-              config={{
-                toolbar: {
-                  items: [
-                    "undo",
-                    "redo",
-                    "|",
-                    "heading",
-                    "|",
-                    "bold",
-                    "italic",
-                    "underline",
-                    "link",
-                    "horizontalLine",
-                    "|",
-                    "blockQuote",
-                    "insertTable",
-                    "fontColor",
-                    "highlight",
-                    "fontSize",
-                    "numberedList",
-                  ],
-                },
-                plugins: [
-                  Bold,
-                  Essentials,
-                  Italic,
-                  Mention,
-                  Paragraph,
-                  Undo,
-                  Heading,
-                  Underline,
-                  Link,
-                  BlockQuote,
-                  Table,
-                  FontColor,
-                  Highlight,
-                  HorizontalLine,
-                  FontSize,
-                  List,
-                ],
-                fontFamily: { options: "Montserrat" },
-              }}
-              onChange={(_, event) => setContent(event.getData())}
+            <ArticleEditor
+              value={content ?? alreadyContent}
+              onChange={setContent}
             />
           </div>
 

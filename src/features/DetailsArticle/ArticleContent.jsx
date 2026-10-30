@@ -1,3 +1,4 @@
+import "../../Styles/articleContent.css";
 import { useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import MediaImage from "../../ui/MediaImage";

@@ -5,7 +5,6 @@ import { useDetailsArticle } from "./useDetailsArticle";
 import MediaImage from "../../ui/MediaImage";
 import ArticleContent from "./ArticleContent";
 
-import "/src/Styles/ckEditor.css";
 import { Share } from "@mui/icons-material";
 
 const SKELETON_COUNT = 5;

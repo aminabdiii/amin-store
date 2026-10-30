@@ -11,30 +11,33 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@ckeditor/ckeditor5-react": "^9.3.0",
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@mui/icons-material": "^6.1.0",
     "@mui/material": "^6.1.0",
     "@tanstack/react-query": "^5.56.0",
     "@tanstack/react-query-devtools": "^5.56.2",
+    "@tiptap/core": "3.32.2",
+    "@tiptap/extension-highlight": "3.32.2",
+    "@tiptap/extension-image": "3.32.2",
+    "@tiptap/extension-table": "3.32.2",
+    "@tiptap/extension-text-style": "3.32.2",
+    "@tiptap/pm": "3.32.2",
+    "@tiptap/react": "3.32.2",
+    "@tiptap/starter-kit": "3.32.2",
     "@tsparticles/react": "^3.0.0",
-    "ckeditor5": "^43.2.0",
-    "ckeditor5-premium-features": "^43.2.0",
     "framer-motion": "^11.11.9",
-    "lodash": "^4.17.21",
-    "nth-check": "^2.1.1",
+    "lodash": "^4.18.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-error-boundary": "^4.1.2",
     "react-hook-form": "^7.53.0",
     "react-icons": "^5.3.0",
     "react-intersection-observer": "^9.13.1",
-    "react-router-dom": "^6.26.2",
-    "react-scripts": "^5.0.1",
+    "react-router-dom": "7.18.5",
     "react-spinners": "^0.14.1",
     "react-toastify": "^10.0.6",
-    "swiper": "^11.1.14",
+    "swiper": "14.3.0",
     "tsparticles": "^3.5.0",
     "typewriter-effect": "^2.21.0"
   },
@@ -44,7 +47,7 @@
     "@testing-library/react": "^16.3.3",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
-    "@vitejs/plugin-react": "^4.3.1",
+    "@vitejs/plugin-react": "6.1.2",
     "autoprefixer": "^10.4.20",
     "eslint": "^8.57.1",
     "eslint-config-standard": "^17.1.0",
@@ -53,16 +56,17 @@
     "eslint-plugin-react-refresh": "^0.4.9",
     "globals": "^15.9.0",
     "jsdom": "^25.0.1",
-    "postcss": "^8.4.47",
+    "postcss": "^8.5.32",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.6",
     "tailwindcss": "^3.4.11",
-    "vite": "^5.4.11",
-    "vite-plugin-eslint": "^1.8.1",
-    "vitest": "^2.1.9"
+    "vite": "8.3.5",
+    "vitest": "5.0.5"
   },
   "overrides": {
-    "nth-check": "$nth-check",
-    "postcss": "^8.4.47"
+    "postcss": "^8.5.32"
+  },
+  "engines": {
+    "node": ">=26.13.0 <27"
   }
 }

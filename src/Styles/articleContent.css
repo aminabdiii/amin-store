@@ -1,0 +1,147 @@
+#container {
+  text-rendering: optimizeLegibility;
+  word-break: break-word;
+}
+
+.ck-content {
+  color: #353535;
+  font-family: "Montserrat";
+}
+
+.ck-content h3 {
+  font-size: 22px;
+  line-height: 24px;
+  font-weight: 500;
+  margin-block: 15px;
+}
+.ck-content h4 {
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 400;
+  margin-block: 12px;
+}
+.ck-content h2 {
+  font-size: 25px;
+  line-height: 24px;
+  margin-block: 10px;
+  padding: 15px 0;
+  font-weight: 500;
+}
+.ck-content p {
+  font-size: 20px;
+  line-height: 35px;
+  margin-block-start: 5px;
+
+  margin-left: 10px;
+  font-weight: 500;
+}
+
+.ck-content hr {
+  height: 1px !important;
+}
+.article-editor-content {
+  min-height: 300px;
+}
+.ck-content li {
+  margin-inline: 15px;
+  line-height: 32px;
+}
+.ck-content ol,
+.ck-content ul {
+  margin-block: 10px;
+}
+
+/* Existing article HTML keeps CKEditor's content classes after the editor migration. */
+.ck-content h1 {
+  font-size: 2rem;
+  font-weight: 600;
+}
+.ck-content h5 {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+.ck-content h6 {
+  font-size: 1rem;
+  font-weight: 600;
+}
+.ck-content ol {
+  list-style: decimal;
+  padding-inline-start: 1.5rem;
+}
+.ck-content ul {
+  list-style: disc;
+  padding-inline-start: 1.5rem;
+}
+.ck-content a {
+  color: #6d28d9;
+  text-decoration: underline;
+}
+.ck-content blockquote {
+  border-inline-start: 3px solid #a1a1aa;
+  padding-inline-start: 1rem;
+  font-style: italic;
+}
+.ck-content figure {
+  max-width: 100%;
+  margin: 1rem auto;
+}
+.ck-content figure.image-style-side {
+  float: right;
+  margin-inline-start: 1rem;
+}
+.ck-content figure.table {
+  overflow-x: auto;
+}
+.ck-content table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.ck-content th,
+.ck-content td {
+  border: 1px solid #a1a1aa;
+  padding: 0.5rem;
+  min-width: 3rem;
+  vertical-align: top;
+}
+.ck-content th {
+  font-weight: 600;
+  background: #f4f4f5;
+}
+.ck-content figcaption {
+  padding: 0.5rem;
+  font-size: 0.875rem;
+  text-align: center;
+  color: #52525b;
+}
+.ck-content .text-tiny {
+  font-size: 0.7em;
+}
+.ck-content .text-small {
+  font-size: 0.85em;
+}
+.ck-content .text-big {
+  font-size: 1.4em;
+}
+.ck-content .text-huge {
+  font-size: 1.8em;
+}
+.ck-content .marker-yellow {
+  background-color: #fdfd77;
+}
+.ck-content .marker-green {
+  background-color: #62f962;
+}
+.ck-content .marker-pink {
+  background-color: #fc7899;
+}
+.ck-content .marker-blue {
+  background-color: #72ccfd;
+}
+.ck-content .pen-red {
+  color: #e71313;
+  background: transparent;
+}
+.ck-content .pen-green {
+  color: #128a00;
+  background: transparent;
+}

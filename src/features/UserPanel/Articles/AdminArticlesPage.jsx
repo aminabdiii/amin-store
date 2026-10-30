@@ -1,28 +1,5 @@
 import QueryError from "../../../ui/QueryError";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import {
-  ClassicEditor,
-  Bold,
-  Essentials,
-  Italic,
-  Mention,
-  Paragraph,
-  Undo,
-  Heading,
-  Underline,
-  Link,
-  BlockQuote,
-  Table,
-  FontColor,
-  Highlight,
-  HorizontalLine,
-  FontSize,
-  List,
-} from "ckeditor5";
-
-import "/src/Styles/ckEditor.css";
-import "ckeditor5/ckeditor5.css";
-import "ckeditor5-premium-features/ckeditor5-premium-features.css";
+import ArticleEditor from "./ArticleEditor";
 
 import { HiUpload } from "react-icons/hi";
 import { useForm } from "react-hook-form";
@@ -143,53 +120,7 @@ function AdminArticlesPage() {
           })}
         />
         <div className="mx-auto w-[99%]">
-          <CKEditor
-            data={content}
-            editor={ClassicEditor}
-            config={{
-              toolbar: {
-                items: [
-                  "undo",
-                  "redo",
-                  "|",
-                  "heading",
-                  "|",
-                  "bold",
-                  "italic",
-                  "underline",
-                  "link",
-                  "horizontalLine",
-                  "|",
-                  "blockQuote",
-                  "insertTable",
-                  "fontColor",
-                  "highlight",
-                  "fontSize",
-                  "numberedList",
-                ],
-              },
-              plugins: [
-                Bold,
-                Essentials,
-                Italic,
-                Mention,
-                Paragraph,
-                Undo,
-                Heading,
-                Underline,
-                Link,
-                BlockQuote,
-                Table,
-                FontColor,
-                Highlight,
-                HorizontalLine,
-                FontSize,
-                List,
-              ],
-              fontFamily: { options: "Montserrat" },
-            }}
-            onBlur={(event, editor) => setContent(editor.getData())}
-          />
+          <ArticleEditor value={content} onChange={setContent} />
         </div>
         {/* upload article image */}
         <div className="relative basis-1/2 overflow-hidden rounded border bg-white py-3">
