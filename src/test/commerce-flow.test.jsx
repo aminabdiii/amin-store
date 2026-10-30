@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import { showDialog } from "../ui/dialogs/dialogService";
 import Cart from "../features/cart/Cart";
 import Order from "../features/UserPanel/purchases/Order";
 const state = vi.hoisted(() => ({
@@ -28,8 +29,8 @@ vi.mock("../features/cart/useInsertUserPurchases", () => ({
 vi.mock("../features/cart/useClearUserCart", () => ({
   useClearUserCart: () => ({ clearCart: state.clear }),
 }));
-vi.mock("sweetalert2", () => ({
-  default: { fire: vi.fn(async () => ({ isConfirmed: true })) },
+vi.mock("../ui/dialogs/dialogService", () => ({
+  showDialog: vi.fn(async () => true),
 }));
 beforeEach(() => {
   vi.clearAllMocks();
@@ -141,6 +142,14 @@ describe("canonical orders", () => {
         expect.any(Object),
       ),
     );
+  });
+  it("does not change order status when confirmation is cancelled", async () => {
+    showDialog.mockResolvedValueOnce(false);
+    const update = vi.fn();
+    open(<Order purchaseItem={order} type="admin" deliveryPurchase={update} />);
+    fireEvent.click(screen.getByRole("button", { name: "processing" }));
+    await waitFor(() => expect(showDialog).toHaveBeenCalled());
+    expect(update).not.toHaveBeenCalled();
   });
   it("has no transitions for terminal states", () => {
     open(

@@ -24,7 +24,7 @@ import PriceSection from "./PriceSection";
 import ProductTitleLink from "./ProductTitleLink";
 import CartSection from "./CartSection";
 import EmptyCart from "./EmptyCart";
-import Swal from "sweetalert2";
+import { showDialog } from "../../ui/dialogs/dialogService";
 function Cart() {
   const {
     cartProducts,
@@ -71,13 +71,14 @@ function Cart() {
     );
   if (!cartItems.length) return <EmptyCart className="min-h-[35rem]" />;
   function remove(variantId) {
-    Swal.fire({
+    showDialog({
       title: "Remove this item from your cart?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Remove",
+      status: "warning",
+      confirmation: true,
+      destructive: true,
+      confirmLabel: "Remove",
     }).then((result) => {
-      if (result.isConfirmed) removeFromCartById({ variantId });
+      if (result) removeFromCartById({ variantId });
     });
   }
   const unavailable = cartItems.some((item) => !item.isAvailable);

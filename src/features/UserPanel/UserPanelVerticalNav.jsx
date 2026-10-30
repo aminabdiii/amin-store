@@ -14,7 +14,7 @@ import { HiOutlineHeart } from "react-icons/hi";
 import { Logout } from "@mui/icons-material";
 
 import Logo from "../../ui/Logo";
-import Swal from "sweetalert2";
+import { showDialog } from "../../ui/dialogs/dialogService";
 import UserPanelAsideMobileItem from "../../ui/UserPanelAsideMobileItem";
 import { FaRegComments } from "react-icons/fa6";
 
@@ -51,12 +51,14 @@ function Window({ isAdmin }) {
   function logoutHandler() {
     open(false);
 
-    Swal.fire({
+    showDialog({
       title: "Are you sure you want to log out?",
-      icon: "warning",
-      showDenyButton: true,
+      status: "warning",
+      confirmation: true,
+      destructive: true,
+      confirmLabel: "Log out",
     }).then((result) => {
-      if (result.isConfirmed) {
+      if (result) {
         logout();
       }
     });

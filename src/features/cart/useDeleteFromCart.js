@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { removeItemToCartApi } from "../../services/cartApi";
-import Swal from "sweetalert2";
+import { showDialog } from "../../ui/dialogs/dialogService";
 
 export function useDeleteFromCart() {
   const queryClient = useQueryClient();
@@ -15,9 +15,9 @@ export function useDeleteFromCart() {
       });
     },
     onError: (error) => {
-      Swal.fire({
+      showDialog({
         title: error.message,
-        icon: "error",
+        status: "error",
       });
     },
   });

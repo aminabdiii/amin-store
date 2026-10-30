@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { loginUserApi } from "../../services/signInOrLoginApi";
-import Swal from "sweetalert2";
+import { showDialog } from "../../ui/dialogs/dialogService";
 
 export function useLoginUser() {
   const queryClient = useQueryClient();
@@ -17,17 +17,17 @@ export function useLoginUser() {
         queryClient.invalidateQueries({ queryKey: ["userRole"] });
         queryClient.invalidateQueries({ queryKey: ["cart"] });
       }
-      Swal.fire({
-        icon: "success",
+      showDialog({
+        status: "success",
         title: "logged in successfully",
-        confirmButtonText: "thats great!",
+        confirmLabel: "thats great!",
       });
     },
     onError: (error) => {
-      Swal.fire({
+      showDialog({
         title: "something went wrong",
-        text: error.message,
-        icon: "error",
+        description: error.message,
+        status: "error",
       });
     },
   });

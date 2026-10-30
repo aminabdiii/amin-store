@@ -20,7 +20,7 @@ import { useGetUserRole } from "../../hooks/useGetUserRole";
 
 import Logo from "../../ui/Logo";
 import UserPanelVerticalNav from "./UserPanelVerticalNav";
-import Swal from "sweetalert2";
+import { showDialog } from "../../ui/dialogs/dialogService";
 
 import { lazy, Suspense } from "react";
 import PageLoader from "../../ui/PageLoader";
@@ -88,12 +88,14 @@ function UserPanel() {
 
   function logoutHandler(event) {
     event.preventDefault();
-    Swal.fire({
+    showDialog({
       title: "Are you sure you want to log out?",
-      icon: "warning",
-      showDenyButton: true,
+      status: "warning",
+      confirmation: true,
+      destructive: true,
+      confirmLabel: "Log out",
     }).then((result) => {
-      if (result.isConfirmed) {
+      if (result) {
         logout();
       }
     });

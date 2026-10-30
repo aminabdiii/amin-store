@@ -1,0 +1,3 @@
+# Project dialogs
+
+Approved design: replace every SweetAlert2 usage with a shared MUI Dialog system. Provide a reusable AppDialog for arbitrary content and forms, plus a promise-based showDialog service for confirmations and feedback. Match the existing violet palette and Montserrat typography, use semantic status icons, responsive layout, visible keyboard focus, safe initial focus, reduced motion, and pending state support. Preserve existing business actions and notification copy where appropriate. Remove the package and override, migrate test mocks, and verify confirmation/cancellation and concurrent requests.

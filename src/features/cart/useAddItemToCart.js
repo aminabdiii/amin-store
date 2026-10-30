@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addItemToCartApi } from "../../services/cartApi";
-import Swal from "sweetalert2";
+import { showDialog } from "../../ui/dialogs/dialogService";
 import { toast } from "react-toastify";
 
 export function useAddItemToCart() {
@@ -18,8 +18,8 @@ export function useAddItemToCart() {
       });
     },
     onError: (error) => {
-      Swal.fire({
-        icon: "error",
+      showDialog({
+        status: "error",
         title: error.message,
       });
     },

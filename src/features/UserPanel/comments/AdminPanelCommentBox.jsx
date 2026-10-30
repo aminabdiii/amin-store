@@ -1,7 +1,7 @@
 import { productPath } from "../../../routing/paths";
 import { HiArchiveBox, HiCheckBadge, HiEye, HiTrash } from "react-icons/hi2";
 import { Link } from "react-router-dom";
-import Swal from "sweetalert2";
+import { showDialog } from "../../../ui/dialogs/dialogService";
 import MediaImage from "../../../ui/MediaImage";
 import { useConfirmUserComment } from "./useConfirmUserComment";
 import { useDeleteComment } from "./useDeleteComment";
@@ -15,33 +15,33 @@ function AdminPanelCommentBox({
   const { deleteComment } = useDeleteComment();
 
   function handleShowCommentContent() {
-    Swal.fire({
+    showDialog({
       title: userName,
-      text: content,
+      description: content,
     });
   }
   function handleConfirmComment() {
     if (isConfirm) return;
-    Swal.fire({
+    showDialog({
       title: "Are you sure about confirming this comment?",
-      icon: "question",
-      iconColor: "#22d3ee",
-      showDenyButton: true,
-      confirmButtonText: "yes",
+      status: "question",
+      confirmation: true,
+      confirmLabel: "Approve comment",
     }).then((result) => {
-      if (result.isConfirmed) {
+      if (result) {
         confirmComment({ id });
       }
     });
   }
   function handleDeleteComment() {
-    Swal.fire({
+    showDialog({
       title: "Are you sure about deleting the desired comment ?",
-      icon: "warning",
-      showDenyButton: true,
-      confirmButtonText: "yes",
+      status: "warning",
+      confirmation: true,
+      destructive: true,
+      confirmLabel: "Delete comment",
     }).then((result) => {
-      if (result.isConfirmed) {
+      if (result) {
         deleteComment({ id });
       }
     });

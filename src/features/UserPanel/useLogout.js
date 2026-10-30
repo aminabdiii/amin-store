@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { logoutApi } from "../../services/userApi";
 import { useNavigate } from "react-router-dom";
-import Swal from "sweetalert2";
+import { showDialog } from "../../ui/dialogs/dialogService";
 
 export function useLogout() {
   const navigate = useNavigate();
@@ -14,15 +14,15 @@ export function useLogout() {
     onSuccess: () => {
       navigate("/home", { replace: true });
       queryClient.clear();
-      Swal.fire({
+      showDialog({
         title: "logout successfully",
-        icon: "success",
+        status: "success",
       });
     },
     onError: (error) => {
-      Swal.fire({
+      showDialog({
         title: error.message,
-        icon: "error",
+        status: "error",
       });
     },
   });

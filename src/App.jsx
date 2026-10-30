@@ -5,6 +5,8 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 
+import DialogHost from "./ui/dialogs/DialogHost";
+
 import ScrollTop from "./ui/ScrollTop";
 import AppRoutes from "./AppRoutes";
 
@@ -36,6 +38,7 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <DialogHost />
       <ToastContainer
         draggable={true}
         stacked

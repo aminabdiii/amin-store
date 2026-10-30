@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import { formatMoney } from "../../../utils/money";
 import { nextOrderStatuses } from "../../../utils/orderStatus";
-import Swal from "sweetalert2";
+import { showDialog } from "../../../ui/dialogs/dialogService";
 import ProductImage from "../../../ui/ProductImage";
 function Order({ purchaseItem, type = "user", deliveryPurchase }) {
   const {
@@ -19,13 +19,13 @@ function Order({ purchaseItem, type = "user", deliveryPurchase }) {
   } = purchaseItem;
   const [pending, setPending] = useState(false);
   async function changeStatus(nextStatus) {
-    const result = await Swal.fire({
+    const result = await showDialog({
       title: `Change order status to ${nextStatus.toLowerCase()}?`,
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "Update status",
+      status: "question",
+      confirmation: true,
+      confirmLabel: "Update status",
     });
-    if (!result.isConfirmed) return;
+    if (!result) return;
     setPending(true);
     deliveryPurchase(
       { id, status: nextStatus },

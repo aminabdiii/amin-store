@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { signInUser } from "../../services/signInOrLoginApi";
-import Swal from "sweetalert2";
+import { showDialog } from "../../ui/dialogs/dialogService";
 
 export function useSignInUser() {
   const queryClient = useQueryClient();
@@ -17,16 +17,16 @@ export function useSignInUser() {
         queryClient.invalidateQueries({ queryKey: ["userRole"] });
         queryClient.invalidateQueries({ queryKey: ["cart"] });
       }
-      Swal.fire({
+      showDialog({
         title: "registration successfully",
-        icon: "success",
+        status: "success",
       });
     },
     onError: (error) => {
-      Swal.fire({
+      showDialog({
         title: "something went wrong",
-        text: error.message,
-        icon: "error",
+        description: error.message,
+        status: "error",
       });
     },
   });

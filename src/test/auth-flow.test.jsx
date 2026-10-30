@@ -23,7 +23,7 @@ vi.mock("../services/signInOrLoginApi", () => ({
   signInUser: api.signup,
 }));
 vi.mock("../services/userApi", () => ({ getUserApi: api.getUser }));
-vi.mock("sweetalert2", () => ({ default: { fire: vi.fn() } }));
+vi.mock("../ui/dialogs/dialogService", () => ({ showDialog: vi.fn() }));
 vi.mock("../ui/PageLoader", () => ({
   default: () => <div role="status">Loading</div>,
 }));

@@ -1,6 +1,6 @@
 import { HiOutlineTrash } from "react-icons/hi2";
 import { useDeleteUser } from "./useDeleteUser";
-import Swal from "sweetalert2";
+import { showDialog } from "../../../ui/dialogs/dialogService";
 import MediaImage from "../../../ui/MediaImage";
 
 function UserBox({ user }) {
@@ -9,13 +9,14 @@ function UserBox({ user }) {
 
   const { avatar, fullName, username: userName, active } = user;
   function handleDeleteUser() {
-    Swal.fire({
-      icon: "warning",
+    showDialog({
+      status: "warning",
       title: `Disable the account for ${fullName}?`,
-      showDenyButton: true,
-      confirmButtonText: "Disable account",
+      confirmation: true,
+      destructive: true,
+      confirmLabel: "Disable account",
     }).then((result) => {
-      if (result.isConfirmed) deleteUser({ userId: user.id });
+      if (result) deleteUser({ userId: user.id });
     });
   }
 
