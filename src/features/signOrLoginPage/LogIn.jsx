@@ -1,5 +1,4 @@
 import { getReturnPath } from "../../routing/paths";
-/* eslint-disable react/no-unescaped-entities */
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Logo from "../../ui/Logo";
 import { useState } from "react";

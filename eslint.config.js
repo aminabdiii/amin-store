@@ -1,11 +1,11 @@
 import js from "@eslint/js";
 import globals from "globals";
-import react from "eslint-plugin-react";
+import reactX from "eslint-plugin-react-x";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 
 export default [
-  { ignores: ["dist"] },
+  { ignores: ["dist", "build"] },
   {
     files: ["**/*.{js,jsx}"],
     languageOptions: {
@@ -19,23 +19,22 @@ export default [
     },
     settings: { react: { version: "18.3" } },
     plugins: {
-      react,
+      "react-x": reactX,
       "react-hooks": reactHooks,
       "react-refresh": reactRefresh,
     },
     rules: {
       ...js.configs.recommended.rules,
-      ...react.configs.recommended.rules,
-      ...react.configs["jsx-runtime"].rules,
-      ...reactHooks.configs.recommended.rules,
-      "react/jsx-no-target-blank": "off",
+      "react-x/no-missing-key": "error",
+      "react-x/no-direct-mutation-state": "error",
+      "react-x/no-access-state-in-setstate": "error",
+      "react-hooks/rules-of-hooks": "error",
+      "react-hooks/exhaustive-deps": "warn",
       "react-refresh/only-export-components": [
         "warn",
         { allowConstantExport: true },
       ],
-      // .eslintrc.cjs
       "no-unused-vars": "warn",
-      "react/prop-types": "off",
     },
   },
 ];
